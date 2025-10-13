@@ -208,6 +208,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7914691601153141383, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ae4b7cc28793eb2409531ba98c10c9a4, type: 2}
+    - target: {fileID: -6411601380773026158, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ae4b7cc28793eb2409531ba98c10c9a4, type: 2}
+    - target: {fileID: -5192366988667637269, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ae4b7cc28793eb2409531ba98c10c9a4, type: 2}
+    - target: {fileID: 206545220947608286, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ae4b7cc28793eb2409531ba98c10c9a4, type: 2}
     - target: {fileID: 919132149155446097, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
       propertyPath: m_Name
       value: Player
@@ -216,6 +232,14 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2896105183516351187, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ae4b7cc28793eb2409531ba98c10c9a4, type: 2}
+    - target: {fileID: 4359822367028712883, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ae4b7cc28793eb2409531ba98c10c9a4, type: 2}
     - target: {fileID: 5866666021909216657, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
       propertyPath: m_Controller
       value: 

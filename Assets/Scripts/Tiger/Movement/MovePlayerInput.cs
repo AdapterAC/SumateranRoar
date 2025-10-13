@@ -40,10 +40,22 @@ namespace ithappy.Animals_FREE
             m_Mover = GetComponent<CreatureMover>();
         }
 
-        private void Update()
+        private void FixedUpdate() // Ganti dari Update()
         {
             GatherInput();
             SetInput();
+        }
+
+        private void Update()
+        {
+            // Hanya untuk camera input yang perlu responsive
+            m_MouseDelta = new Vector2(Input.GetAxis(m_MouseX), Input.GetAxis(m_MouseY));
+            m_Scroll = Input.GetAxis(m_MouseScroll);
+
+            if (m_Camera != null)
+            {
+                m_Camera.SetInput(in m_MouseDelta, m_Scroll);
+            }
         }
 
         public void GatherInput()
@@ -51,10 +63,7 @@ namespace ithappy.Animals_FREE
             m_Axis = new Vector2(Input.GetAxis(m_HorizontalAxis), Input.GetAxis(m_VerticalAxis));
             m_IsRun = Input.GetKey(m_RunKey);
             m_IsJump = Input.GetButton(m_JumpButton);
-
             m_Target = (m_Camera == null) ? Vector3.zero : m_Camera.Target;
-            m_MouseDelta = new Vector2(Input.GetAxis(m_MouseX), Input.GetAxis(m_MouseY));
-            m_Scroll = Input.GetAxis(m_MouseScroll);
         }
 
         public void BindMover(CreatureMover mover)
@@ -67,11 +76,6 @@ namespace ithappy.Animals_FREE
             if (m_Mover != null)
             {
                 m_Mover.SetInput(in m_Axis, in m_Target, in m_IsRun, m_IsJump);
-            }
-
-            if (m_Camera != null)
-            {
-                m_Camera.SetInput(in m_MouseDelta, m_Scroll);
             }
         }
     }
