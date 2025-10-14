@@ -169,11 +169,14 @@ namespace ithappy.Animals_FREE
 
             public void Move(float deltaTime, in Vector2 axis, in Vector3 target, bool isRun, bool isMoving, out Vector2 animAxis, out bool isAir)
             {
-                var cameraLook = Vector3.Normalize(target - m_Transform.position);
+                // Gunakan camera forward direction seperti Player System
+                var cameraDirection = Vector3.Normalize(target - m_Transform.position);
+                var cameraForward = new Vector3(cameraDirection.x, 0f, cameraDirection.z).normalized;
+                
                 var targetForward = m_LastForward;
 
-                ConvertMovement(in axis, in cameraLook, out var movement);
-                if (movement.sqrMagnitude > 0.5f) {
+                ConvertMovement(in axis, in cameraForward, out var movement); // Gunakan cameraForward
+                if (movement.sqrMagnitude > 0.1f) { // Threshold lebih kecil untuk stability
                     m_LastForward = Vector3.Normalize(movement);
                 }
 
