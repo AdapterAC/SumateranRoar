@@ -12,6 +12,7 @@ public class MainMenuController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        ScreenLogger.Log("Start - MainMenu berhasil ditampilkan", ScreenLogger.LogType.Success);
         hostButton.onClick.AddListener(async () => {
             string joinCode = await RelayManager.Instance.StartHostWithRelay(4, "dtls");
             Debug.Log($"Host started with join code: {joinCode}");

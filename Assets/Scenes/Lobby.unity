@@ -1284,7 +1284,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f5604aaeadef446198f03685337f2c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LobbyController
-  ShowTopMostFoldoutHeaderGroup: 1
   cancelButton: {fileID: 2121497024}
   startButton: {fileID: 5217170}
   codeRoom: {fileID: 1909720806}
@@ -1294,6 +1293,7 @@ MonoBehaviour:
   - {fileID: 255564107}
   - {fileID: 424098206}
   - {fileID: 737938543}
+  gameManagerPrefab: {fileID: 6890591744448694798, guid: 4b5fd02f8907446e18c22b1e07f2cee6, type: 3}
 --- !u!1 &1821267645
 GameObject:
   m_ObjectHideFlags: 0
