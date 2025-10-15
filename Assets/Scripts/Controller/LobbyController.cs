@@ -4,22 +4,25 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class LobbyController : NetworkBehaviour
+public class LobbyController : MonoBehaviour
 {
     [SerializeField] private Button cancelButton;
     [SerializeField] private Button startButton;
     [SerializeField] private TextMeshProUGUI codeRoom;
     [SerializeField] private GameObject[] playerSlots;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private GameObject gameManagerPrefab;
+
     void Start()
     {
         cancelButton.onClick.AddListener(OnCancelButtonClicked);
         startButton.onClick.AddListener(OnStartButtonClicked);
         codeRoom.text = RelayManager.Instance.GetRoomCode();
+        SpawnGameManager(); 
     }
 
     private void OnCancelButtonClicked()
     {
+        ScreenLogger.Log($"OnCancelButtonClicked - Berhasil dijalankan", ScreenLogger.LogType.Success);
         NetworkManager.Singleton.Shutdown();
         SceneManager.LoadScene("MainMenu");
     }
@@ -27,7 +30,14 @@ public class LobbyController : NetworkBehaviour
     private void OnStartButtonClicked()
     {
         // Arahkan ke gameplay scene dan spawn player secara random
-        if (IsHost) StartGameServerRpc();
+        ScreenLogger.Log($"OnStartButtonClicked - Berhasil dijalankan", ScreenLogger.LogType.Success);
+        // Debug.Log($"OnStartButtonClicked - IsHost: {IsHost}");
+        // Debug.Log($"OnStartButtonClicked - IsServer: {IsServer}");
+        // Debug.Log($"OnStartButtonClicked - IsClient: {IsClient}");
+        // Debug.Log($"OnStartButtonClicked - IsOwner: {IsOwner}");
+        // Debug.Log($"OnStartButtonClicked - IsHost: {NetworkManager.Singleton.IsHost}");
+        // if (NetworkManager.Singleton.IsHost) StartGameServerRpc();
+        GameManagerNetwork.Instance.StartGameServerRpc();
     }
 
     // Update is called once per frame
@@ -46,21 +56,38 @@ public class LobbyController : NetworkBehaviour
         }
     }
 
-    // ====================================== SERVER RPC ======================================
-    [ServerRpc]
-    private void StartGameServerRpc()
+    private void SpawnGameManager()
     {
-        // Spawn players and start the game
-        Debug.Log("StartGameServerRpc - Game Started by Host!");
+        if (NetworkManager.Singleton.IsHost)
+        {
+            GameObject gm = Instantiate(gameManagerPrefab);
+            gm.GetComponent<NetworkObject>().Spawn(true);
+        }
     }
 
-        // ====================================== CLIENT RPC ======================================
-    [ClientRpc]
-    private void EndGameClientRpc()
-    {
-        // Spawn players and start the game
-        Debug.Log("EndGameClientRpc - Game Ended!");
-        NetworkManager.Singleton.Shutdown();
-        SceneManager.LoadScene("MainMenu");
-    }
+    // ====================================== SERVER RPC ======================================
+    // [ServerRpc(RequireOwnership = false)]
+    // private void StartGameServerRpc()
+    // {
+    //     // Spawn players and start the game
+    //     Debug.Log("StartGameServerRpc - Game Started by Host!");
+    //     NetworkManager.Singleton.SceneManager.LoadScene("GamePlay", LoadSceneMode.Single);
+    // }
+
+    // // ====================================== CLIENT RPC ======================================
+    // [ClientRpc(RequireOwnership = false)]
+    // private void StartGameClientRpc()
+    // {
+    //     // Spawn players and start the game
+    //     Debug.Log("StartGameServerRpc - Game Started to All Client!");
+    //     NetworkManager.Singleton.SceneManager.LoadScene("GamePlay", LoadSceneMode.Single);
+    // }
+    // [ClientRpc]
+    // private void EndGameClientRpc()
+    // {
+    //     // Spawn players and start the game
+    //     Debug.Log("EndGameClientRpc - Game Ended!");
+    //     NetworkManager.Singleton.Shutdown();
+    //     SceneManager.LoadScene("MainMenu");
+    // }
 }
