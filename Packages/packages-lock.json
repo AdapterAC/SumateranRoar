@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.community.netcode.extensions": {
+      "version": "https://github.com/Unity-Technologies/multiplayer-community-contributions.git?path=/com.community.netcode.extensions",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.netcode.gameobjects": "1.0.2"
+      },
+      "hash": "5cea8f048cc16f3575fabcf03af3ebafbc390499"
+    },
     "com.unity.ai.assistant": {
       "version": "1.0.0-pre.12",
       "depth": 0,
@@ -152,8 +161,33 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.multiplayer.samples.coop": {
+      "version": "https://github.com/Unity-Technologies/com.unity.multiplayer.samples.coop.git?path=/Packages/com.unity.multiplayer.samples.coop#main",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.multiplayer.tools": "2.2.3",
+        "com.unity.netcode.gameobjects": "2.2.0"
+      },
+      "hash": "1299ba4fc97d83b634e7d32a86c438ba668d7f9c"
+    },
+    "com.unity.multiplayer.tools": {
+      "version": "2.2.6",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.burst": "1.8.18",
+        "com.unity.collections": "2.5.1",
+        "com.unity.mathematics": "1.3.2",
+        "com.unity.profiling.core": "1.0.2",
+        "com.unity.nuget.mono-cecil": "1.11.4",
+        "com.unity.modules.uielements": "1.0.0",
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.netcode.gameobjects": {
-      "version": "2.5.1",
+      "version": "2.6.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -183,6 +217,13 @@
       "dependencies": {
         "com.unity.modules.physics": "1.0.0"
       },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.profiling.core": {
+      "version": "1.0.2",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.core": {
