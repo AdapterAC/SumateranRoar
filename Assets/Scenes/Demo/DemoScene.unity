@@ -1840,6 +1840,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &865211591 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8430173065519861103, guid: b109fc4084fd25e44bafb458a1903b4f, type: 3}
+  m_PrefabInstance: {fileID: 914316319}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &867553326
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2057,6 +2062,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 1275267134047559442, guid: b109fc4084fd25e44bafb458a1903b4f, type: 3}
+      propertyPath: rayOrigin
+      value: 
+      objectReference: {fileID: 865211591}
     - target: {fileID: 1374878576697549324, guid: b109fc4084fd25e44bafb458a1903b4f, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -3210,7 +3219,7 @@ MonoBehaviour:
   player: {fileID: 159611034}
   tiger: {fileID: 275407848}
   switchDistance: 2.5
-  switchKey: 101
+  switchKey: 273
 --- !u!4 &1531679045
 Transform:
   m_ObjectHideFlags: 0
@@ -3597,13 +3606,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8739604ff156c91408e3f6352de03dbc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1568076113}
   m_SourcePrefab: {fileID: 100100000, guid: 8739604ff156c91408e3f6352de03dbc, type: 3}
 --- !u!4 &1568076111 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8739604ff156c91408e3f6352de03dbc, type: 3}
   m_PrefabInstance: {fileID: 1568076110}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1568076112 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 8739604ff156c91408e3f6352de03dbc, type: 3}
+  m_PrefabInstance: {fileID: 1568076110}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1568076113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568076112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d932577d0e709db45baae57e2964a47b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableTemplate
+  interactDuration: 14
+  onInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &1632920746
 PrefabInstance:
   m_ObjectHideFlags: 0
