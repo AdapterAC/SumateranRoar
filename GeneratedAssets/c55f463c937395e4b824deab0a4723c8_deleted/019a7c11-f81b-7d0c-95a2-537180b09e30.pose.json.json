@@ -1,0 +1,11 @@
+{
+    "asset": "c55f463c937395e4b824deab0a4723c8",
+    "fileName": "019a7c11-f81b-7d0c-95a2-537180b09e30.pose.json",
+    "prompt": "tiger attack animation",
+    "negativePrompt": "",
+    "model": "9e46c009-67d8-4254-a3a0-32e3168247ee",
+    "modelName": "Text to Motion",
+    "customSeed": 1501706445,
+    "w3CTraceId": "45f92e4e8221a0398cfa36199852dd85",
+    "isTrimmed": false
+}
