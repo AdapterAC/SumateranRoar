@@ -16,14 +16,14 @@ public class MainMenuController : MonoBehaviour
         hostButton.onClick.AddListener(async () => {
             string joinCode = await RelayManager.Instance.StartHostWithRelay(4, "dtls");
             Debug.Log($"Host started with join code: {joinCode}");
-            SceneManager.LoadScene("Lobby");
+            SceneManager.LoadScene("LobbyRoom");
         });
 
         joinButton.onClick.AddListener(async () => {
             string joinCode = joinCodeInput.text;
             bool success = await RelayManager.Instance.StartClientWithRelay(joinCode, "dtls");
             Debug.Log($"Join button clicked. Success: {success}");
-            SceneManager.LoadScene("Lobby");
+            SceneManager.LoadScene("LobbyRoom");
         });
     }
 

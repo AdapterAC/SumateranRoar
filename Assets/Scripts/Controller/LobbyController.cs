@@ -12,6 +12,8 @@ public class LobbyController : MonoBehaviour
     [SerializeField] private GameObject[] playerSlots;
     [SerializeField] private GameObject gameManagerPrefab;
 
+    int jumlahMati = 0;
+
     void Start()
     {
         cancelButton.onClick.AddListener(OnCancelButtonClicked);
@@ -90,4 +92,5 @@ public class LobbyController : MonoBehaviour
     //     NetworkManager.Singleton.Shutdown();
     //     SceneManager.LoadScene("MainMenu");
     // }
+
 }

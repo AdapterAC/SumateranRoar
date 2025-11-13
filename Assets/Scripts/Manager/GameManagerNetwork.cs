@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManagerNetwork : NetworkBehaviour
 {
+
     public static GameManagerNetwork Instance;
 
     private void Awake()
@@ -22,4 +23,5 @@ public class GameManagerNetwork : NetworkBehaviour
         ScreenLogger.Log($"StartGameServerRpc - Berhasil dijalankan", ScreenLogger.LogType.Success);
         NetworkManager.Singleton.SceneManager.LoadScene("GamePlay", LoadSceneMode.Single);
     }
+
 }
