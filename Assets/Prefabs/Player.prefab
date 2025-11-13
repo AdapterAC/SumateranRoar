@@ -479,6 +479,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1275267134047559442}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -1829553745595926870}
   m_SourcePrefab: {fileID: 100100000, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
 --- !u!95 &4575170516547292674 stripped
 Animator:
@@ -669,16 +672,23 @@ MonoBehaviour:
     Layer: 0
     OriginatingState: 2081823275
     DestinationState: -662453572
-    TransitionDuration: 0.25
+    TransitionDuration: 0.112345
     TriggerNameHash: -662453572
     TransitionIndex: 2
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: -2089788878
     DestinationState: -662453572
-    TransitionDuration: 0.25
+    TransitionDuration: 0.112345
     TriggerNameHash: -662453572
     TransitionIndex: 3
+  - IsCrossFadeExit: 0
+    Layer: 3
+    OriginatingState: -453240694
+    DestinationState: 646380074
+    TransitionDuration: 0.25
+    TriggerNameHash: 20298039
+    TransitionIndex: 0
   m_Animator: {fileID: 4575170516547292674}
 --- !u!114 &7210349394770750458
 MonoBehaviour:
@@ -760,7 +770,22 @@ MonoBehaviour:
   interactableLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  rayOrigin: {fileID: 0}
+--- !u!114 &-1829553745595926870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7121801933625085634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81b4c5cc8deeea541a54740234ca75b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 3
+  twoHealthSpeedMultiplier: 0.75
+  oneHealthSpeedMultiplier: 0.5
 --- !u!4 &7610636473353213048 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
