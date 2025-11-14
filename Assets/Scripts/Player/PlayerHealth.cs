@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections;
 
 // Script untuk mengatur sistem nyawa pemain
 // Player memiliki 3 nyawa, dengan penalti speed berdasarkan nyawa yang tersisa
@@ -16,6 +17,10 @@ public class PlayerHealth : NetworkBehaviour
     [Tooltip("Speed multiplier ketika health = 1 (50% dari normal)")]
     [SerializeField] private float oneHealthSpeedMultiplier = 0.5f;
 
+    [Header("Animation Settings")]
+    [Tooltip("Durasi transisi smooth untuk Injured layer weight")]
+    [SerializeField] private float injuredLayerTransitionDuration = 0.5f;
+
     [Header("References")]
     private Animator animator;
     private MoveBehaviour moveBehaviour;
@@ -29,6 +34,10 @@ public class PlayerHealth : NetworkBehaviour
     // Animator parameters
     private int injuredLayerIndex;
     private int dieHash;
+    private int hitHash;
+    
+    // Coroutine tracking
+    private Coroutine injuredLayerTransitionCoroutine;
     
     // Property untuk akses public
     public int CurrentHealth => currentHealth.Value;
@@ -44,6 +53,7 @@ public class PlayerHealth : NetworkBehaviour
         
         // Setup animator hash dan layer index
         dieHash = Animator.StringToHash("Die");
+        hitHash = Animator.StringToHash("Hit");
         injuredLayerIndex = animator.GetLayerIndex("Injured");
         
         if (injuredLayerIndex == -1)
@@ -96,6 +106,13 @@ public class PlayerHealth : NetworkBehaviour
         if (!IsOwner) return;
         
         Debug.Log($"Health changed from {previousValue} to {newValue}");
+        
+        // Trigger hit animation jika health berkurang (terkena damage)
+        if (newValue < previousValue && newValue > 0)
+        {
+            TriggerHitAnimation();
+        }
+        
         UpdatePlayerState(newValue);
     }
 
@@ -162,9 +179,51 @@ public class PlayerHealth : NetworkBehaviour
     {
         if (animator == null || injuredLayerIndex == -1) return;
         
-        // Set layer weight: 1 untuk aktif, 0 untuk non-aktif
+        // Stop coroutine yang sedang berjalan jika ada
+        if (injuredLayerTransitionCoroutine != null)
+        {
+            StopCoroutine(injuredLayerTransitionCoroutine);
+        }
+        
+        // Mulai smooth transition
         float targetWeight = isInjured ? 1f : 0f;
+        injuredLayerTransitionCoroutine = StartCoroutine(SmoothTransitionInjuredLayer(targetWeight));
+    }
+
+    // Coroutine untuk smooth transition layer weight
+    private IEnumerator SmoothTransitionInjuredLayer(float targetWeight)
+    {
+        if (animator == null || injuredLayerIndex == -1) yield break;
+        
+        float startWeight = animator.GetLayerWeight(injuredLayerIndex);
+        float elapsed = 0f;
+        
+        while (elapsed < injuredLayerTransitionDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / injuredLayerTransitionDuration;
+            
+            // Smooth lerp menggunakan SmoothStep untuk transisi yang lebih natural
+            float smoothT = t * t * (3f - 2f * t);
+            float currentWeight = Mathf.Lerp(startWeight, targetWeight, smoothT);
+            
+            animator.SetLayerWeight(injuredLayerIndex, currentWeight);
+            
+            yield return null;
+        }
+        
+        // Pastikan weight final tepat
         animator.SetLayerWeight(injuredLayerIndex, targetWeight);
+        injuredLayerTransitionCoroutine = null;
+    }
+
+    // Trigger hit animation saat terkena damage
+    private void TriggerHitAnimation()
+    {
+        if (animator == null) return;
+        
+        animator.SetTrigger(hitHash);
+        Debug.Log("Hit animation triggered!");
     }
 
     // Trigger death animation
