@@ -1,7 +1,8 @@
 using UnityEngine;
+using Unity.Netcode;
 
 [RequireComponent(typeof(CharacterController), typeof(Animator))]
-public class TigerMovement : MonoBehaviour
+public class TigerMovement : NetworkBehaviour
 {
     private CharacterController controller;
     private Animator animator;
@@ -17,7 +18,11 @@ public class TigerMovement : MonoBehaviour
     private Vector3 moveDirection;
     private bool isGrounded;
 
-    void Start()
+    // Network variables untuk sync animator parameters
+    private NetworkVariable<float> networkSpeed = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    private NetworkVariable<float> networkTurn = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+    void Awake()
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
@@ -27,8 +32,46 @@ public class TigerMovement : MonoBehaviour
         controller.minMoveDistance = 0f;
     }
 
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        
+        // Subscribe ke perubahan network variables untuk semua client
+        networkSpeed.OnValueChanged += OnSpeedChanged;
+        networkTurn.OnValueChanged += OnTurnChanged;
+
+        // Jika bukan owner, set state awal dari network variables
+        if (!IsOwner)
+        {
+            animator.SetFloat("Speed", networkSpeed.Value);
+            animator.SetFloat("Turn", networkTurn.Value);
+        }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        
+        // Unsubscribe dari perubahan network variables
+        networkSpeed.OnValueChanged -= OnSpeedChanged;
+        networkTurn.OnValueChanged -= OnTurnChanged;
+    }
+
+    private void OnSpeedChanged(float previous, float current)
+    {
+        animator.SetFloat("Speed", current);
+    }
+
+    private void OnTurnChanged(float previous, float current)
+    {
+        animator.SetFloat("Turn", current);
+    }
+
     void Update()
     {
+        // Hanya owner yang bisa mengontrol
+        if (!IsOwner) return;
+
         // Ground check yang lebih akurat
         isGrounded = controller.isGrounded;
         if (!isGrounded)
@@ -73,9 +116,15 @@ public class TigerMovement : MonoBehaviour
         float turnAmount = horizontal * turnSpeed * Time.deltaTime;
         transform.Rotate(0, turnAmount, 0);
 
-        // Update Animator
+        // Update Animator Parameters
         // Gunakan kecepatan absolut untuk blend tree (0 = diam, >0 = bergerak)
         float animationSpeed = (vertical > 0.1f) ? (isRunning ? 1.0f : 0.5f) : 0.0f;
+        
+        // Update network variables (akan otomatis sync ke semua client)
+        networkSpeed.Value = animationSpeed;
+        networkTurn.Value = horizontal;
+        
+        // Update animator lokal untuk owner
         animator.SetFloat("Speed", animationSpeed);
         animator.SetFloat("Turn", horizontal);
     }

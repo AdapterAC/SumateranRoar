@@ -357,6 +357,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: e82f71f9bc7089442a9ebf290d667464, type: 2}
+    - target: {fileID: 9500000, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
+      propertyPath: m_CullingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 13700002, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -373,13 +377,13 @@ PrefabInstance:
       addedObject: {fileID: 3574544900449087883}
     - targetCorrespondingSourceObject: {fileID: 100068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 4580138910090751548}
+    - targetCorrespondingSourceObject: {fileID: 100068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 203597440549222376}
     - targetCorrespondingSourceObject: {fileID: 100068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5350338012231411513}
-    - targetCorrespondingSourceObject: {fileID: 100068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4580138910090751548}
     - targetCorrespondingSourceObject: {fileID: 100068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4480026319479194528}
@@ -392,6 +396,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7131199295358934726}
+    - targetCorrespondingSourceObject: {fileID: 100068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4036082560387761078}
   m_SourcePrefab: {fileID: 100100000, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
 --- !u!4 &6050810328122501777 stripped
 Transform:
@@ -421,13 +428,38 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1
-  m_Radius: 0.5
+  m_Height: 1.44
+  m_Radius: 1.13
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Center: {x: 0, y: 1.13, z: 0}
+--- !u!114 &4580138910090751548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6050810328122799793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 599893389
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &203597440549222376
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -440,6 +472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 899f2bb59aa103449aa0dde492f23e2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TigerMovement
+  ShowTopMostFoldoutHeaderGroup: 1
   walkSpeed: 1.3
   runSpeed: 2.4
   turnSpeed: 90
@@ -457,36 +490,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59afc11870e921942b287dee1823890b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TigerCombat
+  ShowTopMostFoldoutHeaderGroup: 1
   clawAttackRange: 2
   clawAttackDamage: 1
+  biteAttackRange: 1.5
+  biteAttackDamage: 1
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
---- !u!114 &4580138910090751548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6050810328122799793}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1954946
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 0
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!114 &4480026319479194528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -579,6 +590,28 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!64 &4036082560387761078
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6050810328122799793}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 8ea669a90d3c11643983e2f723670ac6, type: 2}
 --- !u!95 &6050810328132306229 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 9500000, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
