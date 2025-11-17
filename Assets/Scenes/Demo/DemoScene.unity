@@ -2662,67 +2662,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1576488453971394810, guid: a778b631c6253a04899cb31bad047c81, type: 3}
   m_PrefabInstance: {fileID: 1061424511}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &1265314355
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 100068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_Name
-      value: Tiger (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -5.0019274
-      objectReference: {fileID: 0}
-    - target: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.08000016
-      objectReference: {fileID: 0}
-    - target: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -6.0151978
-      objectReference: {fileID: 0}
-    - target: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700002, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: aaa3cabeec623db4ba5f18aa591b4f54, type: 2}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
 --- !u!1 &1283664060
 GameObject:
   m_ObjectHideFlags: 0
@@ -4176,6 +4115,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7529373051122914179, guid: 0a10a8cfb1e928443bba810c4001a70f, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 1443459365
+      objectReference: {fileID: 0}
+    - target: {fileID: -7529373051122914179, guid: 0a10a8cfb1e928443bba810c4001a70f, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7529373051122914179, guid: 0a10a8cfb1e928443bba810c4001a70f, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 1399867621
+      objectReference: {fileID: 0}
     - target: {fileID: 2669138862065272550, guid: 0a10a8cfb1e928443bba810c4001a70f, type: 3}
       propertyPath: m_Name
       value: Tiger
@@ -4243,4 +4194,3 @@ SceneRoots:
   - {fileID: 821217153}
   - {fileID: 1055906665}
   - {fileID: 1557648500}
-  - {fileID: 1265314355}
