@@ -1,26 +1,23 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
+using UnityEngine.SceneManagement;
 
 public class PlayerSpawnManager : NetworkBehaviour
 {
     [Header("Spawning Settings")]
-    [SerializeField] private List<Transform> spawnPoints = new List<Transform>();
     [SerializeField] private GameObject playerPrefab;
-
+    
+    private List<Transform> spawnPoints = new List<Transform>();
     private int nextSpawnPointIndex = 0;
 
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-            
-            // Spawn host player
-            if (IsHost)
-            {
-                SpawnPlayer(NetworkManager.Singleton.LocalClientId);
-            }
+            // Panggil saat scene selesai dimuat
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadCompleted;
         }
     }
 
@@ -28,13 +25,56 @@ public class PlayerSpawnManager : NetworkBehaviour
     {
         if (IsServer)
         {
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnSceneLoadCompleted;
+        }
+    }
+
+    private void OnSceneLoadCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+    {
+        // Hanya cari spawn points jika scene yang dimuat adalah GamePlay
+        if (sceneName == "GamePlay")
+        {
+            FindAndRegisterSpawnPoints();
+            
+            // Spawn player untuk semua client yang sudah terhubung
+            foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+            {
+                SpawnPlayer(clientId);
+            }
+            
+            // Hubungkan kembali callback untuk client yang baru join nanti
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+        }
+        else
+        {
+            // Jika kita meninggalkan GamePlay, putuskan callback
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
         }
     }
 
+    private void FindAndRegisterSpawnPoints()
+    {
+        spawnPoints.Clear();
+        // Cari semua GameObject dengan tag "SpawnPoint"
+        var spawnPointObjects = GameObject.FindGameObjectsWithTag("SpawnPoint");
+        
+        if (spawnPointObjects.Length == 0)
+        {
+            Debug.LogError("No objects with tag 'SpawnPoint' found in the scene!");
+            return;
+        }
+
+        foreach (var sp in spawnPointObjects)
+        {
+            spawnPoints.Add(sp.transform);
+        }
+        
+        Debug.Log($"Found and registered {spawnPoints.Count} spawn points.");
+    }
+
     private void OnClientConnected(ulong clientId)
     {
-        // Spawn player for the newly connected client
+        // Spawn player untuk client yang baru saja terhubung
         SpawnPlayer(clientId);
     }
 
@@ -42,23 +82,30 @@ public class PlayerSpawnManager : NetworkBehaviour
     {
         if (spawnPoints.Count == 0)
         {
-            Debug.LogError("No spawn points assigned in PlayerSpawnManager.");
+            Debug.LogError("Cannot spawn player, no spawn points have been registered.");
             return;
         }
 
-        // Get spawn point and instantiate player
+        // Cek apakah player sudah punya objek
+        if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client) && client.PlayerObject != null)
+        {
+            Debug.Log($"Player for client {clientId} already exists. Skipping spawn.");
+            return;
+        }
+
         Transform spawnPoint = GetNextSpawnPoint();
         GameObject playerInstance = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
         
-        // Spawn the player on the network for the specific client
         NetworkObject networkObject = playerInstance.GetComponent<NetworkObject>();
         if (networkObject != null)
         {
             networkObject.SpawnAsPlayerObject(clientId, true);
+            Debug.Log($"Spawning player for client {clientId} at {spawnPoint.name}");
         }
         else
         {
             Debug.LogError("Player prefab is missing a NetworkObject component.");
+            Destroy(playerInstance);
         }
     }
 
