@@ -10,8 +10,9 @@ public class InteractableTemplate : MonoBehaviour
     [Tooltip("Event yang dipicu saat interaksi dimulai.")]
     public UnityEvent onInteract;
 
-    public virtual void Interact(GameObject interactor)
+    public virtual bool Interact(GameObject interactor)
     {
         onInteract?.Invoke();
+        return true;
     }
 }

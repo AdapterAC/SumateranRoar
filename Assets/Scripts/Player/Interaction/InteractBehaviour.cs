@@ -58,20 +58,24 @@ public class InteractBehaviour : GenericBehaviour
     {
         isInteracting = true;
         behaviourManager.LockTempBehaviour(behaviourCode);
-        behaviourManager.GetAnim.SetFloat(speedFloat, 0f);
-        behaviourManager.GetAnim.ResetTrigger(interactTrigger);
-
+        
         AlignTowards(target.transform.position);
 
-        behaviourManager.GetAnim.SetTrigger(interactTrigger);
-
-        target.Interact(gameObject);
-
-        float wait = Mathf.Max(0f, target.interactDuration);
-        if (wait > 0f)
+        // Coba lakukan interaksi dan periksa apakah berhasil
+        if (target.Interact(gameObject))
         {
-            yield return new WaitForSeconds(wait);
+            // Interaksi berhasil, mainkan animasi
+            behaviourManager.GetAnim.SetFloat(speedFloat, 0f);
+            behaviourManager.GetAnim.ResetTrigger(interactTrigger);
+            behaviourManager.GetAnim.SetTrigger(interactTrigger);
+
+            float wait = Mathf.Max(0f, target.interactDuration);
+            if (wait > 0f)
+            {
+                yield return new WaitForSeconds(wait);
+            }
         }
+        // Jika interaksi gagal, tidak ada animasi yang dimainkan dan pemain tidak terkunci lama.
 
         behaviourManager.UnlockTempBehaviour(behaviourCode);
         isInteracting = false;

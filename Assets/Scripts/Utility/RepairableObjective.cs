@@ -17,12 +17,12 @@ public class RepairableObjective : InteractableTemplate
         }
     }
 
-    public override void Interact(GameObject interactor)
+    public override bool Interact(GameObject interactor)
     {
         if (isRepaired)
         {
             Debug.Log(gameObject.name + " sudah diperbaiki.");
-            return;
+            return false;
         }
 
         isRepaired = true;
@@ -36,5 +36,6 @@ public class RepairableObjective : InteractableTemplate
         }
 
         Debug.Log(interactor.name + " telah memperbaiki " + gameObject.name);
+        return true;
     }
 }

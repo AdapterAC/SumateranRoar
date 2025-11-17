@@ -30,7 +30,7 @@ public class ExitGate : InteractableTemplate
         return completedObjectives >= totalObjectives && totalObjectives > 0;
     }
 
-    public override void Interact(GameObject interactor)
+    public override bool Interact(GameObject interactor)
     {
         if (AllObjectivesCompleted())
         {
@@ -38,12 +38,14 @@ public class ExitGate : InteractableTemplate
             // Panggil event onInteract untuk memicu animasi pintu terbuka atau logika kemenangan
             base.Interact(interactor);
             // TODO: Tambahkan logika untuk memenangkan permainan di sini
+            return true;
         }
         else
         {
             int remaining = totalObjectives - completedObjectives;
             Debug.Log("[ExitGate] Pintu masih terkunci. Selesaikan " + remaining + " objektif lagi.");
             // Mungkin bisa memutar suara pintu terkunci atau menampilkan pesan di UI
+            return false;
         }
     }
 }
