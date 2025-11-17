@@ -261,22 +261,30 @@ public class PlayerHealth : NetworkBehaviour
     // Public method untuk menerima damage
     public void TakeDamage(int damageAmount = 1)
     {
-        if (!IsOwner) return;
-        
-        if (currentHealth.Value > 0)
+        if (!IsServer)
         {
+            // Jika bukan server, minta server untuk mengurangi health
             TakeDamageServerRpc(damageAmount);
+        }
+        else
+        {
+            // Jika sudah di server, langsung kurangi health
+            if (currentHealth.Value > 0)
+            {
+                currentHealth.Value = Mathf.Max(0, currentHealth.Value - damageAmount);
+                Debug.Log($"Server: Player took {damageAmount} damage. Current health: {currentHealth.Value}");
+            }
         }
     }
 
     // Server RPC untuk handle damage
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)] // Allow non-owners to call this
     private void TakeDamageServerRpc(int damageAmount)
     {
         if (currentHealth.Value > 0)
         {
             currentHealth.Value = Mathf.Max(0, currentHealth.Value - damageAmount);
-            Debug.Log($"Player took {damageAmount} damage. Current health: {currentHealth.Value}");
+            Debug.Log($"Server RPC: Player took {damageAmount} damage. Current health: {currentHealth.Value}");
         }
     }
 

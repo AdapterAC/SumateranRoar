@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8303061077786219698}
   - component: {fileID: 6073425238737264238}
   - component: {fileID: 2628302168629358236}
+  - component: {fileID: 3622588751876405972}
   m_Layer: 0
   m_Name: GameManagerNetwork
   m_TagString: Untagged
@@ -45,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 4011448299
+  GlobalObjectIdHash: 2050760293
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -71,3 +72,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManagerNetwork
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &3622588751876405972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6890591744448694798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a57d530b0684b4a4da220962b85b2a21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawnManager
+  ShowTopMostFoldoutHeaderGroup: 1
+  spawnPoints: []
+  playerPrefab: {fileID: 7121801933625085634, guid: b109fc4084fd25e44bafb458a1903b4f, type: 3}
