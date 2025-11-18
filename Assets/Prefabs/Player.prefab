@@ -1053,18 +1053,115 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSound
   audioSource: {fileID: -2620983464339205167}
-  walkSounds:
-  - {fileID: 8300000, guid: 9d757ad845bff694b82a78c93df44bc9, type: 3}
-  - {fileID: 8300000, guid: 7c80b697fc0e79044b962ad0c297380d, type: 3}
-  - {fileID: 8300000, guid: 9f2a4f71cb2a9b44190101e805bfb580, type: 3}
-  - {fileID: 8300000, guid: d1136f5b07e082d4b94ddb98e6d2a05b, type: 3}
-  - {fileID: 8300000, guid: ca256c1e70bb593409d90420c03249db, type: 3}
-  runSounds:
-  - {fileID: 8300000, guid: 8d91393f09010c140bf8c599d5fbdd02, type: 3}
-  - {fileID: 8300000, guid: 32cdf3b6546d9ab49bf688a64d184b6e, type: 3}
-  - {fileID: 8300000, guid: b805595086df71d40a08d9e9d9d59cde, type: 3}
-  - {fileID: 8300000, guid: e525af7a6fd15a84cadbf486d1e3354f, type: 3}
-  - {fileID: 8300000, guid: dcfcfe666dd53954e8be2c2ad128dbcd, type: 3}
+  surfaceSounds:
+  - tag: DirtyGround
+    walkClips:
+    - {fileID: 8300000, guid: db7e7f549dd0ba9499b5482c29827389, type: 3}
+    - {fileID: 8300000, guid: 57d38730e822e3143b3f8326e3572281, type: 3}
+    - {fileID: 8300000, guid: 45fa7f8bf238773498ff9ef0baa0b695, type: 3}
+    - {fileID: 8300000, guid: 0cd0ea603b7c51d46b102cdaf25bab3f, type: 3}
+    - {fileID: 8300000, guid: b45cf56b175a05649885898034e1e946, type: 3}
+    runClips:
+    - {fileID: 8300000, guid: f708e27a5c083774e9169a1f30fe6ac4, type: 3}
+    - {fileID: 8300000, guid: d574f8e0d88312f46b1af52a581b6e9d, type: 3}
+    - {fileID: 8300000, guid: 2ce6a64399dd4ed409d23c0a61b6296f, type: 3}
+    - {fileID: 8300000, guid: aea7811f01b05fd4fb65895d9f8aae3b, type: 3}
+    - {fileID: 8300000, guid: b47e3899ce16b154492515598733007c, type: 3}
+    jumpStartClips:
+    - {fileID: 8300000, guid: 70a11524c7a854741882ecaee18b7fb7, type: 3}
+    - {fileID: 8300000, guid: c5bce59086f521e4e9e61ebb07ee904f, type: 3}
+    - {fileID: 8300000, guid: e7c3d3951ee6487418196a149a1a44f1, type: 3}
+    jumpEndClips:
+    - {fileID: 8300000, guid: 188c660e64e744c49ae4b89ebff9c886, type: 3}
+    - {fileID: 8300000, guid: cf3081fa77d34bc4895ee3001fde7fd3, type: 3}
+    - {fileID: 8300000, guid: a8d24ae2a1804584da51b90fd8745eb2, type: 3}
+  - tag: Grass
+    walkClips:
+    - {fileID: 8300000, guid: 91463624f4fba0e49a7deeef07c5c30d, type: 3}
+    - {fileID: 8300000, guid: 26b3d32807de66e458ce8bebb99d9dcf, type: 3}
+    - {fileID: 8300000, guid: 61530e91121c4b1409c5a81fef74cc7e, type: 3}
+    - {fileID: 8300000, guid: 986a7e24b26df874db4d146ab5db06ab, type: 3}
+    - {fileID: 8300000, guid: 90ad3a9e80fda064ab45c6e179d2eb6e, type: 3}
+    - {fileID: 8300000, guid: 58f1224a7d2a705448f3cf7e84098f3a, type: 3}
+    runClips:
+    - {fileID: 8300000, guid: 8a8fedab6ff227340ac10e51fb557b0f, type: 3}
+    - {fileID: 8300000, guid: fcdbaa94b7d928246b07827eaa73a49a, type: 3}
+    - {fileID: 8300000, guid: 0e203b89c99f6384b8194ecbb6a888d6, type: 3}
+    - {fileID: 8300000, guid: 28bfac56cbf9840439e6f7c7e2371d75, type: 3}
+    - {fileID: 8300000, guid: 473aea2a74d2b374aa3608758b03ebfa, type: 3}
+    jumpStartClips:
+    - {fileID: 8300000, guid: 49a62240f6ed4e64c9a4e5d5fe7e096d, type: 3}
+    - {fileID: 8300000, guid: 858078d435c13dc45806ceaecd91c13d, type: 3}
+    - {fileID: 8300000, guid: cdbdba7ffb9a4474092e59271f73c631, type: 3}
+    jumpEndClips:
+    - {fileID: 8300000, guid: 390fca75bbde24b4cbedbf38f1cfbc4c, type: 3}
+    - {fileID: 8300000, guid: 15782073025a69e46a4d9f98e5741092, type: 3}
+    - {fileID: 8300000, guid: b4c3413915f87e040a9a8881892d2762, type: 3}
+  - tag: Metal
+    walkClips:
+    - {fileID: 8300000, guid: 5e9f3c0a05aa2854eb1fb4726fb396ad, type: 3}
+    - {fileID: 8300000, guid: fa67157d3cdec7a4a84f531b904a40cf, type: 3}
+    - {fileID: 8300000, guid: 909147aac2b8fd0408cb7e3239034e9e, type: 3}
+    - {fileID: 8300000, guid: 52f5582c6c37d9d4e8e6ee19c84c14ca, type: 3}
+    - {fileID: 8300000, guid: d5453d69396a42a4aa07b99b116a0d59, type: 3}
+    - {fileID: 8300000, guid: f157d8d5ddf8a6843b0ac14342ffc912, type: 3}
+    runClips:
+    - {fileID: 8300000, guid: 73bd36a6eca3d874b8582ea179e64880, type: 3}
+    - {fileID: 8300000, guid: 366a54b5321af4f45b1ee2be22f0a02e, type: 3}
+    - {fileID: 8300000, guid: a025514ea6aba5246ac1420b6ff17622, type: 3}
+    - {fileID: 8300000, guid: d79be6e1630710b448173e5e79b8fad7, type: 3}
+    - {fileID: 8300000, guid: ebe92225aa1e2884e99f5df426b00ea0, type: 3}
+    - {fileID: 8300000, guid: 5ced8b85ba48d2d468fb771cbfa88fbe, type: 3}
+    jumpStartClips:
+    - {fileID: 8300000, guid: 91a627cab737d344badc07cdd2cd18dd, type: 3}
+    - {fileID: 8300000, guid: 96eb7f51c0ab96847a030de4b1a39adc, type: 3}
+    - {fileID: 8300000, guid: 2cca8ec0baf8f5e40886990eda4fd945, type: 3}
+    jumpEndClips:
+    - {fileID: 8300000, guid: 4b286178ff057f84c93be0b1c77863d5, type: 3}
+    - {fileID: 8300000, guid: f03b7f330fa1b714db950947cd7cf800, type: 3}
+    - {fileID: 8300000, guid: cf6af88ef9b44cd498bdd7012b958917, type: 3}
+  - tag: Rock
+    walkClips:
+    - {fileID: 8300000, guid: 606ac7d6b6e59714d9d6ae3b0f85cdd6, type: 3}
+    - {fileID: 8300000, guid: 72c4786d16ae1ce45bc03422d1899803, type: 3}
+    - {fileID: 8300000, guid: 584719ee30a5e304a9458c663a427100, type: 3}
+    - {fileID: 8300000, guid: 51a3b4935d7dbe143bd4c7771c44d8e0, type: 3}
+    - {fileID: 8300000, guid: 5072571f044db7b498a2bd88754259ce, type: 3}
+    runClips:
+    - {fileID: 8300000, guid: 11cf37506ea692940a0ea39f3ea99624, type: 3}
+    - {fileID: 8300000, guid: 7d1d95c091503b84093dc0fc9ab91563, type: 3}
+    - {fileID: 8300000, guid: ca18233b3e3e41643a4cf5873b379737, type: 3}
+    - {fileID: 8300000, guid: 98ac747b2ff881c49ac8bac426f02aaf, type: 3}
+    - {fileID: 8300000, guid: 26ce40710ef7b7d4dae97cbcb6cc6c3e, type: 3}
+    jumpStartClips:
+    - {fileID: 8300000, guid: dfae64ddade875e479c954b7dc6a8c75, type: 3}
+    - {fileID: 8300000, guid: 9ae15db1a6b04eb448044f201c4895d0, type: 3}
+    - {fileID: 8300000, guid: 54ef7eccf7b92d24b9a2b241db46ba85, type: 3}
+    jumpEndClips:
+    - {fileID: 8300000, guid: 370630ed72e0825429017389ab314c79, type: 3}
+    - {fileID: 8300000, guid: 3b9eee9c504548a4dbfa57abf70141a5, type: 3}
+    - {fileID: 8300000, guid: e4662423b1adc754781f75b147ad257a, type: 3}
+  - tag: Tile
+    walkClips:
+    - {fileID: 8300000, guid: 0024b92a843325a46997732d9933d64e, type: 3}
+    - {fileID: 8300000, guid: 95a93ed93c75b7c40b59f6a121f76034, type: 3}
+    - {fileID: 8300000, guid: f7497228610d3da4284a522c3d8d267f, type: 3}
+    - {fileID: 8300000, guid: ee7ac31f27d0257428460c74e4bc5a6a, type: 3}
+    - {fileID: 8300000, guid: 7ca95feac2cf91c45bf401301a7bdefc, type: 3}
+    runClips:
+    - {fileID: 8300000, guid: dadae56c84e661240bf0467cb6fbf936, type: 3}
+    - {fileID: 8300000, guid: ac4ff98fc34e3cf48aceec997ae74aed, type: 3}
+    - {fileID: 8300000, guid: 415cbff216a37994888f6240d72e7f4d, type: 3}
+    - {fileID: 8300000, guid: 16e151f86eaa2bf4ea38b1f259b6cc67, type: 3}
+    - {fileID: 8300000, guid: aa9bceed9fc4bae428edc8f790318404, type: 3}
+    jumpStartClips:
+    - {fileID: 8300000, guid: 9420ef0a819d4a84aa0d50f85dd4bddd, type: 3}
+    - {fileID: 8300000, guid: af13873eb7d160942ab70a1efbb721b1, type: 3}
+    - {fileID: 8300000, guid: a7a24a81d325d334b9bcf04cb2511675, type: 3}
+    jumpEndClips:
+    - {fileID: 8300000, guid: ac87085723d9d1c4cac9e328f2f5cd91, type: 3}
+    - {fileID: 8300000, guid: b242f106a64112340ae118d0987eed9d, type: 3}
+    - {fileID: 8300000, guid: a9b25f39b695fa740ab565e3298cfcc3, type: 3}
 --- !u!82 &-2620983464339205167
 AudioSource:
   m_ObjectHideFlags: 0
