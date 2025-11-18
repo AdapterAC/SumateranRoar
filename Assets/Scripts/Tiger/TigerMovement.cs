@@ -18,6 +18,11 @@ public class TigerMovement : NetworkBehaviour
     private Vector3 moveDirection;
     private bool isGrounded;
 
+    // Variabel untuk smoothing animasi
+    public float animationSmoothTime = 0.2f;
+    private float smoothedSpeed;
+    private float smoothedTurn;
+
     // Network variables untuk sync animator parameters
     private NetworkVariable<float> networkSpeed = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private NetworkVariable<float> networkTurn = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -59,12 +64,20 @@ public class TigerMovement : NetworkBehaviour
 
     private void OnSpeedChanged(float previous, float current)
     {
-        animator.SetFloat("Speed", current);
+        // Non-owner akan langsung set nilai, atau bisa juga ditambahkan smoothing di sini
+        if (!IsOwner)
+        {
+            animator.SetFloat("Speed", current);
+        }
     }
 
     private void OnTurnChanged(float previous, float current)
     {
-        animator.SetFloat("Turn", current);
+        // Non-owner akan langsung set nilai, atau bisa juga ditambahkan smoothing di sini
+        if (!IsOwner)
+        {
+            animator.SetFloat("Turn", current);
+        }
     }
 
     void Update()
@@ -116,16 +129,22 @@ public class TigerMovement : NetworkBehaviour
         float turnAmount = horizontal * turnSpeed * Time.deltaTime;
         transform.Rotate(0, turnAmount, 0);
 
-        // Update Animator Parameters
-        // Gunakan kecepatan absolut untuk blend tree (0 = diam, >0 = bergerak)
-        float animationSpeed = (vertical > 0.1f) ? (isRunning ? 1.0f : 0.5f) : 0.0f;
+        // --- LOGIKA ANIMASI YANG DIPERBARUI ---
+
+        // 1. Tentukan target speed dan turn untuk animasi
+        float targetAnimationSpeed = (vertical > 0.1f) ? (isRunning ? 1.0f : 0.5f) : 0.0f;
+        float targetTurnAmount = horizontal;
+
+        // 2. Lakukan interpolasi (smoothing) dari nilai saat ini ke nilai target
+        smoothedSpeed = Mathf.Lerp(smoothedSpeed, targetAnimationSpeed, Time.deltaTime / animationSmoothTime);
+        smoothedTurn = Mathf.Lerp(smoothedTurn, targetTurnAmount, Time.deltaTime / animationSmoothTime);
+
+        // 3. Update network variables dengan nilai yang sudah di-smooth
+        networkSpeed.Value = smoothedSpeed;
+        networkTurn.Value = smoothedTurn;
         
-        // Update network variables (akan otomatis sync ke semua client)
-        networkSpeed.Value = animationSpeed;
-        networkTurn.Value = horizontal;
-        
-        // Update animator lokal untuk owner
-        animator.SetFloat("Speed", animationSpeed);
-        animator.SetFloat("Turn", horizontal);
+        // 4. Update animator lokal untuk owner
+        animator.SetFloat("Speed", smoothedSpeed);
+        animator.SetFloat("Turn", smoothedTurn);
     }
 }
