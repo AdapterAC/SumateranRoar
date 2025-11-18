@@ -433,6 +433,10 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: bdee5d3554581c0479475d0d1d0cf96d, type: 2}
@@ -1052,7 +1056,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d4941616bb33c343a6d3d35122ea272, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSound
-  audioSource: {fileID: -2620983464339205167}
+  ShowTopMostFoldoutHeaderGroup: 1
+  stepAudioSource: {fileID: -2620983464339205167}
   surfaceSounds:
   - tag: DirtyGround
     walkClips:
