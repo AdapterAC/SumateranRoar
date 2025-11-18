@@ -44,6 +44,8 @@ public class PlayerHealth : NetworkBehaviour
     public int MaxHealth => maxHealth;
     public float CurrentSpeedMultiplier { get; private set; } = 1f;
 
+    public event System.Action<int, int> OnHealthChangedEvent;
+
     private void Awake()
     {
         // Setup references
@@ -104,6 +106,8 @@ public class PlayerHealth : NetworkBehaviour
     private void OnHealthChanged(int previousValue, int newValue)
     {
         if (!IsOwner) return;
+
+        OnHealthChangedEvent?.Invoke(newValue, maxHealth);
         
         Debug.Log($"Health changed from {previousValue} to {newValue}");
         
@@ -352,6 +356,7 @@ public class PlayerHealth : NetworkBehaviour
     }
 
     // Debug info untuk testing
+    /*
     private void OnGUI()
     {
         if (!IsOwner) return;
@@ -372,6 +377,7 @@ public class PlayerHealth : NetworkBehaviour
             Heal(1);
         }
     }
+    */
 
     private string GetCurrentStateString()
     {
