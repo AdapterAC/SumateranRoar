@@ -1,5 +1,78 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4855861520212002591
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1373565744498787373}
+  - component: {fileID: 4334623473387455729}
+  - component: {fileID: 2459412063226454520}
+  m_Layer: 7
+  m_Name: FootDamage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1373565744498787373
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4855861520212002591}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.057964236, y: 0.00000004319007, z: -0.00000029965656, w: 0.99831873}
+  m_LocalPosition: {x: -0, y: -0.001, z: -0.018}
+  m_LocalScale: {x: 0.40780026, y: 0.4078002, z: 0.40780035}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6050810328122501887}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4334623473387455729
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4855861520212002591}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.26554522, y: 0.40846476, z: 0.42602465}
+  m_Center: {x: -0.1309675, y: -0.1440527, z: 0.02912117}
+--- !u!114 &2459412063226454520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4855861520212002591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 189aab001e8caf242afa8297ffac34d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
+  ShowTopMostFoldoutHeaderGroup: 1
+  damageAmount: 1
+  damageCooldown: 3
+  damageOnTriggerEnter: 1
+  damageOnTriggerStay: 0
+  damageInterval: 1
+  playerTag: Player
 --- !u!1 &6214069537092439890
 GameObject:
   m_ObjectHideFlags: 0
@@ -371,6 +444,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2359598563206670013}
+    - targetCorrespondingSourceObject: {fileID: 400042, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1373565744498787373}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
       insertIndex: -1
@@ -403,6 +479,11 @@ PrefabInstance:
 --- !u!4 &6050810328122501777 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400068, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
+  m_PrefabInstance: {fileID: 6050810328122896469}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6050810328122501887 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400042, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}
   m_PrefabInstance: {fileID: 6050810328122896469}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &6050810328122799793 stripped

@@ -25,8 +25,9 @@ public class DamageDealer : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!IsServer) return;
         if (!damageOnTriggerEnter) return;
-        
+
         if (other.CompareTag(playerTag))
         {
             DealDamageToPlayer(other.gameObject);
@@ -35,12 +36,13 @@ public class DamageDealer : NetworkBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        if (!IsServer) return;
         if (!damageOnTriggerStay) return;
-        
+
         if (other.CompareTag(playerTag))
         {
             // Check if enough time has passed since last damage
-            if (!lastDamageTime.ContainsKey(other.gameObject) || 
+            if (!lastDamageTime.ContainsKey(other.gameObject) ||
                 Time.time - lastDamageTime[other.gameObject] >= damageInterval)
             {
                 DealDamageToPlayer(other.gameObject);
@@ -50,6 +52,8 @@ public class DamageDealer : NetworkBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (!IsServer) return;
+
         if (collision.gameObject.CompareTag(playerTag))
         {
             DealDamageToPlayer(collision.gameObject);
@@ -58,6 +62,7 @@ public class DamageDealer : NetworkBehaviour
 
     private void DealDamageToPlayer(GameObject playerObject)
     {
+        if (!IsServer) return; // Ensure damage is only processed on server
         // Check cooldown
         if (lastDamageTime.ContainsKey(playerObject))
         {
