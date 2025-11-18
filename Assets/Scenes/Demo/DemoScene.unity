@@ -4115,6 +4115,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7529373051122914179, guid: 0a10a8cfb1e928443bba810c4001a70f, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 1443459365
+      objectReference: {fileID: 0}
+    - target: {fileID: -7529373051122914179, guid: 0a10a8cfb1e928443bba810c4001a70f, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7529373051122914179, guid: 0a10a8cfb1e928443bba810c4001a70f, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 1399867621
+      objectReference: {fileID: 0}
     - target: {fileID: 2669138862065272550, guid: 0a10a8cfb1e928443bba810c4001a70f, type: 3}
       propertyPath: m_Name
       value: Tiger
