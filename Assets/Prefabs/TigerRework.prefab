@@ -559,6 +559,12 @@ MonoBehaviour:
   turnSpeed: 45
   gravity: -20
   groundCheckDistance: 0.2
+  animationSmoothTime: 0.2
+  groundRaycastDistance: 1.5
+  rotationDamping: 5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &5350338012231411513
 MonoBehaviour:
   m_ObjectHideFlags: 0

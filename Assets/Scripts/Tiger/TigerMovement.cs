@@ -27,6 +27,12 @@ public class TigerMovement : NetworkBehaviour
     private NetworkVariable<float> networkSpeed = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private NetworkVariable<float> networkTurn = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
+    // Variabel untuk terrain adaptation
+    [Header("Terrain Adaptation")]
+    public float groundRaycastDistance = 1.5f;
+    public float rotationDamping = 5.0f;
+    public LayerMask groundLayer;
+
     void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -35,6 +41,11 @@ public class TigerMovement : NetworkBehaviour
         // Pastikan CharacterController menyentuh tanah
         controller.skinWidth = 0.08f;
         controller.minMoveDistance = 0f;
+
+        if (groundLayer == 0)
+        {
+            groundLayer = LayerMask.GetMask("Default");
+        }
     }
 
     public override void OnNetworkSpawn()
@@ -85,17 +96,15 @@ public class TigerMovement : NetworkBehaviour
         // Hanya owner yang bisa mengontrol
         if (!IsOwner) return;
 
-        // Ground check yang lebih akurat
+        HandleMovement();
+        HandleAnimation();
+        HandleTerrainAdaptation();
+    }
+
+    void HandleMovement()
+    {
+        // Ground check
         isGrounded = controller.isGrounded;
-        if (!isGrounded)
-        {
-            // Raycast untuk deteksi tanah yang lebih baik
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, Vector3.down, out hit, groundCheckDistance + 0.1f))
-            {
-                isGrounded = true;
-            }
-        }
 
         // Input
         float horizontal = Input.GetAxis("Horizontal"); // A/D atau Panah Kiri/Kanan
@@ -112,9 +121,9 @@ public class TigerMovement : NetworkBehaviour
         moveDirection = transform.forward * vertical * currentSpeed;
 
         // Mengaplikasikan gravitasi
-        if (isGrounded)
+        if (isGrounded && verticalSpeed < 0)
         {
-            verticalSpeed = -2f; // Gaya ke bawah lebih kuat agar tetap menempel di tanah
+            verticalSpeed = -2f;
         }
         else
         {
@@ -128,8 +137,13 @@ public class TigerMovement : NetworkBehaviour
         // Memutar karakter
         float turnAmount = horizontal * turnSpeed * Time.deltaTime;
         transform.Rotate(0, turnAmount, 0);
+    }
 
-        // --- LOGIKA ANIMASI YANG DIPERBARUI ---
+    void HandleAnimation()
+    {
+        float vertical = Input.GetAxis("Vertical");
+        float horizontal = Input.GetAxis("Horizontal");
+        bool isRunning = Input.GetKey(KeyCode.LeftShift);
 
         // 1. Tentukan target speed dan turn untuk animasi
         float targetAnimationSpeed = (vertical > 0.1f) ? (isRunning ? 1.0f : 0.5f) : 0.0f;
@@ -140,11 +154,34 @@ public class TigerMovement : NetworkBehaviour
         smoothedTurn = Mathf.Lerp(smoothedTurn, targetTurnAmount, Time.deltaTime / animationSmoothTime);
 
         // 3. Update network variables dengan nilai yang sudah di-smooth
-        networkSpeed.Value = smoothedSpeed;
-        networkTurn.Value = smoothedTurn;
+        if (IsOwner)
+        {
+            networkSpeed.Value = smoothedSpeed;
+            networkTurn.Value = smoothedTurn;
+        }
         
         // 4. Update animator lokal untuk owner
         animator.SetFloat("Speed", smoothedSpeed);
         animator.SetFloat("Turn", smoothedTurn);
+    }
+
+    void HandleTerrainAdaptation()
+    {
+        RaycastHit hit;
+        Vector3 raycastOrigin = transform.position + Vector3.up * 0.5f;
+
+        if (Physics.Raycast(raycastOrigin, Vector3.down, out hit, groundRaycastDistance, groundLayer))
+        {
+            // Menyesuaikan posisi Y agar menempel di tanah
+            Vector3 targetPosition = hit.point;
+            if (controller.isGrounded)
+            {
+                transform.position = new Vector3(transform.position.x, targetPosition.y + controller.skinWidth, transform.position.z);
+            }
+
+            // Menyesuaikan rotasi dengan normal tanah
+            Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationDamping);
+        }
     }
 }
