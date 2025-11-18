@@ -24,6 +24,22 @@ public class PlayerHealthUI : MonoBehaviour
     [SerializeField] private Color injuredColor = Color.red;
     [SerializeField] private Color deadColor = Color.gray;
 
+    private void OnEnable()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.OnHealthChangedEvent += OnHealthChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.OnHealthChangedEvent -= OnHealthChanged;
+        }
+    }
+
     private void Start()
     {
         // Auto-find PlayerHealth if not assigned
@@ -42,18 +58,25 @@ public class PlayerHealthUI : MonoBehaviour
         UpdateUI();
     }
 
+    private void OnHealthChanged(int currentHealth, int maxHealth)
+    {
+        UpdateUI(currentHealth, maxHealth);
+    }
+
     private void Update()
     {
+        /*
         if (playerHealth != null)
         {
             UpdateUI();
         }
+        */
     }
 
-    private void UpdateUI()
+    private void UpdateUI(int currentHealth, int maxHealth)
     {
-        int currentHealth = playerHealth.CurrentHealth;
-        int maxHealth = playerHealth.MaxHealth;
+        // int currentHealth = playerHealth.CurrentHealth;
+        // int maxHealth = playerHealth.MaxHealth;
         
         // Update health icons
         UpdateHealthIcons(currentHealth, maxHealth);
@@ -71,6 +94,12 @@ public class PlayerHealthUI : MonoBehaviour
             statusText.text = GetStatusText(currentHealth);
             statusText.color = GetHealthColor(currentHealth);
         }
+    }
+
+    private void UpdateUI()
+    {
+        if (playerHealth == null) return;
+        UpdateUI(playerHealth.CurrentHealth, playerHealth.MaxHealth);
     }
 
     private void UpdateHealthIcons(int currentHealth, int maxHealth)

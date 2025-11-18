@@ -6,12 +6,16 @@ public class PlayerSound : MonoBehaviour
     public AudioClip[] walkSounds;
     public AudioClip[] runSounds;
 
+    private AudioClip lastWalkSound;
+    private AudioClip lastRunSound;
+
     public void PlayWalkSound()
     {
         if (walkSounds.Length > 0)
         {
-            int index = Random.Range(0, walkSounds.Length);
-            audioSource.clip = walkSounds[index];
+            AudioClip clipToPlay = GetRandomClip(walkSounds, lastWalkSound);
+            lastWalkSound = clipToPlay;
+            audioSource.clip = clipToPlay;
             audioSource.Play();
         }
     }
@@ -20,9 +24,26 @@ public class PlayerSound : MonoBehaviour
     {
         if (runSounds.Length > 0)
         {
-            int index = Random.Range(0, runSounds.Length);
-            audioSource.clip = runSounds[index];
+            AudioClip clipToPlay = GetRandomClip(runSounds, lastRunSound);
+            lastRunSound = clipToPlay;
+            audioSource.clip = clipToPlay;
             audioSource.Play();
         }
+    }
+
+    private AudioClip GetRandomClip(AudioClip[] clips, AudioClip lastClip)
+    {
+        if (clips.Length == 1)
+        {
+            return clips[0];
+        }
+
+        AudioClip clip;
+        do
+        {
+            clip = clips[Random.Range(0, clips.Length)];
+        } while (clip == lastClip);
+
+        return clip;
     }
 }
