@@ -7,13 +7,6 @@ public class TigerCombat : NetworkBehaviour
     private Animator animator;
     private NetworkVariable<int> networkBiteIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    [Header("Combat Settings")]
-    public float clawAttackRange = 2.0f;
-    public int clawAttackDamage = 1; // Damage 1 karena player health hanya 3
-    public float biteAttackRange = 1.5f;
-    public int biteAttackDamage = 1; // Damage 1 karena player health hanya 3
-    public LayerMask playerLayer; // Atur di Inspector, misal: layer "Player"
-
     void Awake()
     {
         animator = GetComponent<Animator>();
@@ -56,6 +49,12 @@ public class TigerCombat : NetworkBehaviour
         {
             TriggerAttackServerRpc(1); // 1 = Bite attack
         }
+
+        // Serangan Ultimate (Klik Kanan)
+        if (Input.GetMouseButtonDown(1))
+        {
+            TriggerAttackServerRpc(2); // 2 = Ultimate attack
+        }
     }
 
     [ServerRpc]
@@ -85,61 +84,10 @@ public class TigerCombat : NetworkBehaviour
             // Bite attack - index sudah di-set oleh server
             animator.SetTrigger("AttackBite");
         }
-    }
-
-    // --- Fungsi ini dipanggil oleh Animation Event ---
-    // Pastikan untuk menambahkannya di frame serangan pada animasi F_Attack_Claws.anim
-    public void DealClawDamage()
-    {
-        // Hanya server yang bisa memberikan damage
-        if (!IsServer) return;
-
-        Vector3 attackPosition = transform.position + transform.forward * (clawAttackRange * 0.5f);
-        Collider[] hitPlayers = Physics.OverlapSphere(attackPosition, clawAttackRange, playerLayer);
-
-        foreach (Collider player in hitPlayers)
+        else if (attackType == 2)
         {
-            Debug.Log("Server: Harimau menyerang dengan cakar: " + player.name);
-            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(clawAttackDamage);
-            }
+            // Ultimate attack
+            animator.SetTrigger("AttackUltimate");
         }
-    }
-
-    // --- Fungsi ini dipanggil oleh Animation Event pada animasi Bite ---
-    // Pastikan untuk menambahkannya di frame serangan pada animasi F_Attack_Bite_Left.anim dan F_Attack_Bite_Right.anim
-    public void DealBiteDamage()
-    {
-        // Hanya server yang bisa memberikan damage
-        if (!IsServer) return;
-        
-        Vector3 attackPosition = transform.position + transform.forward * (biteAttackRange * 0.5f);
-        Collider[] hitPlayers = Physics.OverlapSphere(attackPosition, biteAttackRange, playerLayer);
-
-        foreach (Collider player in hitPlayers)
-        {
-            Debug.Log("Server: Harimau menyerang dengan gigitan: " + player.name);
-            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(biteAttackDamage);
-            }
-        }
-    }
-
-    // Gizmo untuk visualisasi jangkauan serangan di Editor
-    void OnDrawGizmosSelected()
-    {
-        // Claw attack range (merah)
-        Gizmos.color = Color.red;
-        Vector3 clawPosition = transform.position + transform.forward * (clawAttackRange * 0.5f);
-        Gizmos.DrawWireSphere(clawPosition, clawAttackRange);
-        
-        // Bite attack range (kuning)
-        Gizmos.color = Color.yellow;
-        Vector3 bitePosition = transform.position + transform.forward * (biteAttackRange * 0.5f);
-        Gizmos.DrawWireSphere(bitePosition, biteAttackRange);
     }
 }
