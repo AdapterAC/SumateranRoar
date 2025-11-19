@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -6,46 +8,57 @@ public class GamePlayController : NetworkBehaviour
     [SerializeField] private GameObject playerHumanPrefab;
     [SerializeField] private GameObject playerTigerPrefab;
 
-    private Vector3 spawnHumanPosition = new(2.76f, 0.079f, -25.32f);
-    private Vector3 spawnTigerPosition = new(8.15f, 0.08f, -24.61f);
+    private Vector3 spawnHumanPosition = new(2.76f, 5f, -25.32f);
+    private Vector3 spawnTigerPosition = new(8.15f, 5f, -24.61f);
 
 
     public override void OnNetworkSpawn()
     {
-        ScreenLogger.Log($"OnNetworkSpawn - Berhasil dijalankan", ScreenLogger.LogType.Success);
         if (IsServer)
         {
-            // NetworkManager.Singleton.OnClientDisconnectCallback += OnPlayerLeave;
-            ScreenLogger.Log($"OnNetworkSpawn - Berhasil dijalankan IF-nya", ScreenLogger.LogType.Success);
-            SpawnPlayers();
+            StartCoroutine(DelayedSpawnPlayers());
         }
+    }
+
+    private IEnumerator DelayedSpawnPlayers()
+    {
+        // Wait for 1 second to ensure all clients have loaded the scene
+        yield return new WaitForSeconds(1f);
+        SpawnPlayers();
     }
 
     private void SpawnPlayers()
     {
         if (!IsServer) return;
-        int totalPlayer = NetworkManager.ConnectedClients.Count;
-        // int randomTigerId = UnityEngine.Random.Range(0, totalPlayer);
-        int i = 0;
-        foreach (var client in NetworkManager.ConnectedClientsList)
+
+        var clients = NetworkManager.Singleton.ConnectedClientsList;
+        if (clients.Count == 0) return;
+
+        int tigerIndex = Random.Range(0, clients.Count);
+        ulong tigerClientId = clients[tigerIndex].ClientId;
+
+        foreach (var client in clients)
         {
-            Debug.Log($"Total player: {totalPlayer}");
-            if ((int)client.ClientId == 0)
+            GameObject playerInstance;
+            if (client.ClientId == tigerClientId)
             {
-                ScreenLogger.Log($"SpawnPlayers - Berhasil dijalankan ID: {client.ClientId} jadi HARIMAU", ScreenLogger.LogType.Success);
-                GameObject playerInstance = Instantiate(playerTigerPrefab, spawnTigerPosition, Quaternion.identity);
-                playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(client.ClientId);
-                // AddPlayerCharacterListClientRpc(client.ClientId, CharacterType.Pocong);
+                ScreenLogger.Log($"Spawning Tiger for client {client.ClientId}", ScreenLogger.LogType.Success);
+                playerInstance = Instantiate(playerTigerPrefab, spawnTigerPosition, Quaternion.identity);
             }
             else
             {
-                ScreenLogger.Log($"SpawnPlayers - Berhasil dijalankan ID: {client.ClientId} jadi MANUSIA", ScreenLogger.LogType.Success);
-                GameObject playerInstance = Instantiate(playerHumanPrefab, spawnHumanPosition, Quaternion.identity);
-                playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(client.ClientId);
-                // AddPlayerCharacterListClientRpc(client.ClientId, CharacterType.Kid);
+                ScreenLogger.Log($"Spawning Human for client {client.ClientId}", ScreenLogger.LogType.Success);
+                playerInstance = Instantiate(playerHumanPrefab, spawnHumanPosition, Quaternion.identity);
             }
-            i++;
+
+            if (playerInstance.TryGetComponent<NetworkObject>(out var netObj))
+            {
+                netObj.SpawnAsPlayerObject(client.ClientId);
+            }
+            else
+            {
+                Debug.LogError($"Player prefab for client {client.ClientId} is missing a NetworkObject component.");
+            }
         }
     }
-    
 }

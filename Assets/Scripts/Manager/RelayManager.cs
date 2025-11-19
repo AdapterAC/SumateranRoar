@@ -6,11 +6,41 @@ using Unity.Netcode.Transports.UTP;
 using System.Threading.Tasks;
 using Unity.Services.Core;
 using Unity.Services.Authentication;
+using UnityEngine.SceneManagement;
 
 public class RelayManager : MonoBehaviour
 {
     public static RelayManager Instance;
-    private void Awake() => Instance = this;
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void Start()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnTransportFailure += OnTransportFailure;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnTransportFailure -= OnTransportFailure;
+        }
+    }
+
+    private void OnTransportFailure()
+    {
+        Debug.LogError("Transport failure! Shutting down NetworkManager and returning to MainMenu.");
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
+        SceneManager.LoadScene("MainMenu");
+    }
 
     public string roomCode = "";
 
