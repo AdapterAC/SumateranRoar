@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Hunter
   - SpawnPoint
+  - Tile
+  - Grass
+  - Metal
+  - Rock
   layers:
   - Default
   - TransparentFX
