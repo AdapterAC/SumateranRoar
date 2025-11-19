@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Linq;
 
 public class StepSounds : NetworkBehaviour
 {
@@ -74,6 +75,11 @@ public class StepSounds : NetworkBehaviour
         if (clips != null && clips.Length > 0)
         {
             int clipIndex = GetRandomClipIndex(clips, lastClip);
+
+            // Play sound locally immediately for the owner
+            PlaySound(clipIndex, type, currentSurfaceTag);
+
+            // Tell the server to tell other clients to play the sound
             PlayStepSoundServerRpc(clipIndex, type, currentSurfaceTag);
         }
     }
@@ -81,11 +87,23 @@ public class StepSounds : NetworkBehaviour
     [ServerRpc]
     private void PlayStepSoundServerRpc(int clipIndex, string type, string surfaceTag)
     {
-        PlayStepSoundClientRpc(clipIndex, type, surfaceTag);
+        PlayStepSoundClientRpc(clipIndex, type, surfaceTag, new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                // Send to all clients except the one who sent the RPC
+                TargetClientIds = NetworkManager.Singleton.ConnectedClientsIds.Where(id => id != OwnerClientId).ToArray()
+            }
+        });
     }
 
     [ClientRpc]
-    private void PlayStepSoundClientRpc(int clipIndex, string type, string surfaceTag)
+    private void PlayStepSoundClientRpc(int clipIndex, string type, string surfaceTag, ClientRpcParams clientRpcParams = default)
+    {
+        PlaySound(clipIndex, type, surfaceTag);
+    }
+
+    private void PlaySound(int clipIndex, string type, string surfaceTag)
     {
         SurfaceSound surface = null;
         foreach (var s in surfaceSounds)
