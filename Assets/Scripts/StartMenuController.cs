@@ -11,8 +11,8 @@ public class StartMenuController : MonoBehaviour
 
     public void ProfileButton_OnClick()
     {
-        // TODO: Implement logic for the Profile menu
-        Debug.Log("Profile button clicked. Not implemented yet.");
+        // Loads the Profile scene for character customization
+        SceneManager.LoadScene("ProfileScene");
     }
 
     public void SettingsButton_OnClick()
