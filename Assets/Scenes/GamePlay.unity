@@ -3060,7 +3060,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GamePlayController
   ShowTopMostFoldoutHeaderGroup: 1
-  playerHumanPrefab: {fileID: 7121801933625085634, guid: b109fc4084fd25e44bafb458a1903b4f, type: 3}
+  playerHumanPrefab: {fileID: 6244139467226834372, guid: b63732731785e57469ee08fcef17c9e3, type: 3}
   playerTigerPrefab: {fileID: 6050810328122799793, guid: a78a3c8b846b8ac47a58169aaea89fd0, type: 3}
 --- !u!4 &1531996864
 Transform:
