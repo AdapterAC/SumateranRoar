@@ -7,6 +7,7 @@ public class MoveBehaviour : GenericBehaviour
     public float walkSpeed = 0.15f;                 // Default walk speed.
     public float runSpeed = 1.0f;                   // Default run speed.
     public float sprintSpeed = 2.0f;                // Default sprint speed.
+    public float crouchSpeed = 1.5f;                // Crouch movement speed (script-based movement).
     public float speedDampTime = 0.1f;              // Default damp time to change the animations based on current speed.
     public string jumpButton = "Jump";              // Default jump button.
     public float jumpHeight = 1.5f;                 // Default jump height.
@@ -148,7 +149,7 @@ public class MoveBehaviour : GenericBehaviour
         }
 
         // Call function that deals with player orientation.
-        Rotating(horizontal, vertical);
+        Vector3 targetDirection = Rotating(horizontal, vertical);
 
         // Set proper speed.
         Vector2 dir = new Vector2(horizontal, vertical);
@@ -159,7 +160,15 @@ public class MoveBehaviour : GenericBehaviour
         
         if (isCrouching)
         {
-            speed *= walkSpeed; // Use walkSpeed for crouching movement
+            // Crouch animation is in-place, so move via script
+            speed *= walkSpeed; // Set animation speed for crouch
+            
+            // Manual movement for crouch (because animation is in-place)
+            if (targetDirection != Vector3.zero)
+            {
+                Vector3 crouchMovement = targetDirection.normalized * crouchSpeed * Time.fixedDeltaTime;
+                behaviourManager.GetRigidBody.MovePosition(behaviourManager.GetRigidBody.position + crouchMovement);
+            }
         }
         else
         {
