@@ -2665,7 +2665,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1333635531
+  GlobalObjectIdHash: 2269254014
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2775,6 +2775,7 @@ MonoBehaviour:
   walkSpeed: 0.15
   runSpeed: 0.5
   sprintSpeed: 1
+  crouchSpeed: 1.5
   speedDampTime: 0.1
   jumpButton: Jump
   jumpHeight: 1.5
@@ -2967,7 +2968,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSound
   ShowTopMostFoldoutHeaderGroup: 1
-  stepAudioSource: {fileID: -2620983464339205167, guid: b109fc4084fd25e44bafb458a1903b4f, type: 3}
+  stepAudioSource: {fileID: 672073331507082401}
   surfaceSounds:
   - tag: DirtyGround
     walkClips:
