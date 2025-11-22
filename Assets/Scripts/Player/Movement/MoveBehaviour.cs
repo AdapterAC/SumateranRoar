@@ -18,6 +18,8 @@ public class MoveBehaviour : GenericBehaviour
     private bool jump;                              // Boolean to determine whether or not the player started a jump.
     private bool isColliding;                       // Boolean to determine if the player has collided with an obstacle.
     private StepSounds stepSounds;                // Reference to the StepSounds script.
+    private bool isCrouching;                       // Boolean to determine if the player is crouching.
+    private int isCrouchingBool;                    // Animator variable related to crouching.
 
     // Start is always called after any Awake functions.
     void Start()
@@ -25,6 +27,7 @@ public class MoveBehaviour : GenericBehaviour
         // Set up the references.
         jumpBool = Animator.StringToHash("Jump");
         groundedBool = Animator.StringToHash("Grounded");
+        isCrouchingBool = Animator.StringToHash("IsCrouching");
         behaviourManager.GetAnim.SetBool(groundedBool, true);
         stepSounds = GetComponent<StepSounds>();
 
@@ -50,6 +53,8 @@ public class MoveBehaviour : GenericBehaviour
         {
             jump = true;
         }
+
+        CrouchManagement();
     }
 
     // LocalFixedUpdate overrides the virtual function of the base class.
@@ -60,6 +65,15 @@ public class MoveBehaviour : GenericBehaviour
 
         // Call the jump manager.
         JumpManagement();
+    }
+
+    void CrouchManagement()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftControl) && behaviourManager.IsCurrentBehaviour(this.behaviourCode) && !behaviourManager.IsOverriding())
+        {
+            isCrouching = !isCrouching;
+            behaviourManager.GetAnim.SetBool(isCrouchingBool, isCrouching);
+        }
     }
 
     // Execute the idle and walk/run jump movements.
@@ -142,10 +156,18 @@ public class MoveBehaviour : GenericBehaviour
         // This is for PC only, gamepads control speed via analog stick.
         speedSeeker += Input.GetAxis("Mouse ScrollWheel");
         speedSeeker = Mathf.Clamp(speedSeeker, walkSpeed, runSpeed);
-        speed *= speedSeeker;
-        if (behaviourManager.IsSprinting())
+        
+        if (isCrouching)
         {
-            speed = sprintSpeed;
+            speed *= walkSpeed; // Use walkSpeed for crouching movement
+        }
+        else
+        {
+            speed *= speedSeeker;
+            if (behaviourManager.IsSprinting())
+            {
+                speed = sprintSpeed;
+            }
         }
 
         behaviourManager.GetAnim.SetFloat(speedFloat, speed, speedDampTime, Time.deltaTime);
