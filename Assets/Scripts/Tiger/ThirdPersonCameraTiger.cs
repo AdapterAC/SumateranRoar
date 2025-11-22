@@ -22,6 +22,12 @@ public class ThirdPersonCameraTiger : MonoBehaviour
         Cursor.visible = false;
     }
 
+    // Method untuk menerima input rotasi dari TigerMovement
+    public void AddRotationInput(float yawAmount)
+    {
+        currentX += yawAmount;
+    }
+
     void LateUpdate()
     {
         if (target == null)

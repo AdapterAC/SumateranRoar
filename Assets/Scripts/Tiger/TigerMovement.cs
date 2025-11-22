@@ -9,6 +9,7 @@ public class TigerMovement : NetworkBehaviour
     
     [Header("Camera Reference")]
     public Transform cameraTransform; // Drag camera tiger ke sini
+    public ThirdPersonCameraTiger cameraScript; // Drag script kamera ke sini
 
     [Header("Movement Settings")]
     public float walkSpeed = 2.0f;
@@ -53,6 +54,12 @@ public class TigerMovement : NetworkBehaviour
             {
                 Debug.LogWarning("Camera Transform belum diassign! Drag camera object ke field Camera Transform di Inspector.");
             }
+        }
+        
+        // Jika camera script tidak di-assign, coba cari dari cameraTransform
+        if (cameraScript == null && cameraTransform != null)
+        {
+            cameraScript = cameraTransform.GetComponent<ThirdPersonCameraTiger>();
         }
         
         // Pastikan CharacterController menyentuh tanah
@@ -131,19 +138,36 @@ public class TigerMovement : NetworkBehaviour
         bool isRunning = Input.GetKey(KeyCode.LeftShift) && vertical > 0; // Hanya bisa lari maju
         float currentSpeed = isRunning ? runSpeed : walkSpeed;
         
-        // Jika sedang bergerak, rotate harimau mengikuti arah kamera
-        if (Mathf.Abs(vertical) > 0.1f && cameraTransform != null)
+        // Rotasi harimau
+        if (Mathf.Abs(vertical) > 0.1f)
         {
-            // Dapatkan arah kamera (hanya horizontal)
-            Vector3 cameraForward = cameraTransform.forward;
-            cameraForward.y = 0;
-            cameraForward.Normalize();
+            // Saat bergerak, kombinasikan rotasi dari kamera dan input A/D
+            if (cameraTransform != null)
+            {
+                // Dapatkan arah kamera (hanya horizontal)
+                Vector3 cameraForward = cameraTransform.forward;
+                cameraForward.y = 0;
+                cameraForward.Normalize();
+                
+                // Hitung rotasi target berdasarkan arah kamera
+                Quaternion targetRotation = Quaternion.LookRotation(cameraForward);
+                
+                // Rotate harimau secara smooth ke arah kamera
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.deltaTime * 0.1f);
+            }
             
-            // Hitung rotasi target berdasarkan arah kamera
-            Quaternion targetRotation = Quaternion.LookRotation(cameraForward);
-            
-            // Rotate harimau secara smooth ke arah kamera
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.deltaTime * 0.1f);
+            // Tambahkan rotasi manual dari tombol A/D
+            if (Mathf.Abs(horizontal) > 0.1f)
+            {
+                float turnAmount = horizontal * turnSpeed * Time.deltaTime;
+                transform.Rotate(0, turnAmount, 0);
+                
+                // Beritahu kamera untuk mengikuti rotasi harimau
+                if (cameraScript != null)
+                {
+                    cameraScript.AddRotationInput(turnAmount);
+                }
+            }
         }
         else
         {
@@ -187,7 +211,7 @@ public class TigerMovement : NetworkBehaviour
             targetAnimationSpeed = -0.5f; // Nilai untuk animasi berjalan mundur
         }
         
-        // 2. Hitung Turn parameter berdasarkan perbedaan sudut antara harimau dan kamera
+        // 2. Hitung Turn parameter berdasarkan perbedaan sudut antara harimau dan kamera + input A/D
         float targetTurnAmount = 0f;
         
         if (Mathf.Abs(vertical) > 0.1f && cameraTransform != null)
@@ -206,7 +230,11 @@ public class TigerMovement : NetworkBehaviour
             
             // Konversi angle difference ke nilai Turn parameter (-1 sampai 1)
             // Normalisasi dari -90 sampai 90 derajat
-            targetTurnAmount = Mathf.Clamp(angleDifference / 90f, -1f, 1f);
+            float cameraTurnInfluence = Mathf.Clamp(angleDifference / 90f, -1f, 1f);
+            
+            // Tambahkan input keyboard A/D ke turn amount
+            // Kombinasikan dengan camera influence
+            targetTurnAmount = Mathf.Clamp(cameraTurnInfluence + horizontal, -1f, 1f);
         }
         else
         {
