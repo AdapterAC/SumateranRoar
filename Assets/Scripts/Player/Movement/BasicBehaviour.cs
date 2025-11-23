@@ -10,6 +10,9 @@ public class BasicBehaviour : MonoBehaviour
 	public float sprintFOV = 100f;                        // the FOV to use on the camera when player is sprinting.
 	public string sprintButton = "Sprint";                // Default sprint button input name.
 
+	private StaminaController staminaController;          // Reference to stamina controller.
+	private StaminaUI staminaUI;                          // Reference to stamina UI.
+
 	private float h;                                      // Horizontal Axis.
 	private float v;                                      // Vertical Axis.
 	private int currentBehaviour;                         // Reference to the current player behaviour.
@@ -54,6 +57,8 @@ public class BasicBehaviour : MonoBehaviour
 		vFloat = Animator.StringToHash("V");
 		camScript = playerCamera.GetComponent<ThirdPersonOrbitCamBasic> ();
 		rBody = GetComponent<Rigidbody> ();
+		staminaController = GetComponent<StaminaController>();
+		staminaUI = GetComponentInChildren<StaminaUI>();
 
 		// Grounded verification variables.
 		groundedBool = Animator.StringToHash("Grounded");
@@ -263,7 +268,22 @@ public class BasicBehaviour : MonoBehaviour
 	// Check if player is sprinting.
 	public virtual bool IsSprinting()
 	{
-		return sprint && IsMoving() && CanSprint();
+		bool canSprintStamina = staminaController == null || staminaController.CanSprint();
+		bool isSprinting = sprint && IsMoving() && CanSprint() && canSprintStamina;
+		
+		// Update stamina controller
+		if (staminaController != null)
+		{
+			staminaController.SetSprinting(isSprinting);
+		}
+		
+		// Show/hide stamina UI
+		if (staminaUI != null)
+		{
+			staminaUI.SetVisible(sprint && IsMoving());
+		}
+		
+		return isSprinting;
 	}
 
 	// Check if player can sprint (all behaviours must allow).
