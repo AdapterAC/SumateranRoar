@@ -277,10 +277,10 @@ public class BasicBehaviour : MonoBehaviour
 			staminaController.SetSprinting(isSprinting);
 		}
 		
-		// Show/hide stamina UI
+		// Notify stamina UI about sprint state
 		if (staminaUI != null)
 		{
-			staminaUI.SetVisible(sprint && IsMoving());
+			staminaUI.NotifySprinting(isSprinting);
 		}
 		
 		return isSprinting;

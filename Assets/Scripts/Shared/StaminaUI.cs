@@ -14,6 +14,7 @@ public class StaminaUI : NetworkBehaviour
     private StaminaController staminaController;
     private CanvasGroup canvasGroup;
     private Coroutine fadeCoroutine;
+    private bool wasSprintingLastFrame = false;
 
     void Awake()
     {
@@ -40,8 +41,7 @@ public class StaminaUI : NetworkBehaviour
         {
             staminaController.OnStaminaChanged += UpdateStaminaBar;
             staminaController.OnExhaustionStateChanged += HandleExhaustion;
-            // We need a way to know if the player is sprinting to show/hide the bar
-            // This will be handled by the player/tiger movement scripts
+            UpdateVisibility(); // Set initial state
         }
         else
         {
@@ -59,6 +59,29 @@ public class StaminaUI : NetworkBehaviour
             staminaController.OnExhaustionStateChanged -= HandleExhaustion;
         }
         base.OnNetworkDespawn();
+    }
+
+    void Update()
+    {
+        if (!IsOwner) return;
+        UpdateVisibility();
+    }
+
+    private void UpdateVisibility()
+    {
+        if (staminaController == null) return;
+
+        // Tampilkan bar jika:
+        // 1. Sedang sprint, ATAU
+        // 2. Stamina tidak penuh (sedang regenerasi atau exhausted)
+        bool shouldShow = wasSprintingLastFrame || staminaController.CurrentStamina < staminaController.MaxStamina;
+        
+        SetVisible(shouldShow);
+    }
+
+    public void NotifySprinting(bool isSprinting)
+    {
+        wasSprintingLastFrame = isSprinting;
     }
 
     private void UpdateStaminaBar(float currentStamina, float maxStamina)

@@ -157,10 +157,10 @@ public class TigerMovement : NetworkBehaviour
             staminaController.SetSprinting(isRunning);
         }
         
-        // Show/hide stamina UI
+        // Notify stamina UI about sprint state
         if (staminaUI != null)
         {
-            staminaUI.SetVisible(wantsToRun);
+            staminaUI.NotifySprinting(isRunning);
         }
         
         float currentSpeed = isRunning ? runSpeed : walkSpeed;
