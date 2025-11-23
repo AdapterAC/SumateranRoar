@@ -34,6 +34,14 @@ public class TigerMovement : NetworkBehaviour
     // Network variables untuk sync animator parameters
     private NetworkVariable<float> networkSpeed = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private NetworkVariable<float> networkTurn = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    
+    // Network optimization variables
+    [Header("Network Optimization")]
+    public float networkUpdateRate = 0.1f; // Update network setiap 0.1 detik (10 updates/sec)
+    public float networkValueThreshold = 0.01f; // Hanya update jika perubahan > threshold
+    private float lastNetworkUpdateTime;
+    private float lastNetworkSpeed;
+    private float lastNetworkTurn;
 
     // Variabel untuk terrain adaptation
     [Header("Terrain Adaptation")]
@@ -246,16 +254,34 @@ public class TigerMovement : NetworkBehaviour
         smoothedSpeed = Mathf.Lerp(smoothedSpeed, targetAnimationSpeed, Time.deltaTime / animationSmoothTime);
         smoothedTurn = Mathf.Lerp(smoothedTurn, targetTurnAmount, Time.deltaTime / animationSmoothTime);
 
-        // 4. Update network variables dengan nilai yang sudah di-smooth
-        if (IsOwner)
-        {
-            networkSpeed.Value = smoothedSpeed;
-            networkTurn.Value = smoothedTurn;
-        }
-        
-        // 5. Update animator lokal untuk owner
+        // 4. Update animator lokal untuk owner (setiap frame)
         animator.SetFloat("Speed", smoothedSpeed);
         animator.SetFloat("Turn", smoothedTurn);
+        
+        // 5. Update network variables HANYA jika perlu (throttled + threshold)
+        if (IsOwner)
+        {
+            float timeSinceLastUpdate = Time.time - lastNetworkUpdateTime;
+            
+            // Update network hanya jika:
+            // - Sudah melewati update rate interval
+            // - DAN ada perubahan signifikan (> threshold)
+            if (timeSinceLastUpdate >= networkUpdateRate)
+            {
+                float speedDelta = Mathf.Abs(smoothedSpeed - lastNetworkSpeed);
+                float turnDelta = Mathf.Abs(smoothedTurn - lastNetworkTurn);
+                
+                if (speedDelta > networkValueThreshold || turnDelta > networkValueThreshold)
+                {
+                    networkSpeed.Value = smoothedSpeed;
+                    networkTurn.Value = smoothedTurn;
+                    
+                    lastNetworkSpeed = smoothedSpeed;
+                    lastNetworkTurn = smoothedTurn;
+                    lastNetworkUpdateTime = Time.time;
+                }
+            }
+        }
     }
 
     void HandleTerrainAdaptation()

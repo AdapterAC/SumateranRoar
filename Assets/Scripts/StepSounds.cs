@@ -11,6 +11,27 @@ public class StepSounds : NetworkBehaviour
     public SurfaceSound[] surfaceSounds;
 
     private string currentSurfaceTag = "DirtyGround";
+    
+    void Awake()
+    {
+        // Ensure AudioSource exists and is enabled
+        if (stepAudioSource == null)
+        {
+            stepAudioSource = GetComponent<AudioSource>();
+            if (stepAudioSource == null)
+            {
+                stepAudioSource = gameObject.AddComponent<AudioSource>();
+                Debug.LogWarning("StepSounds: AudioSource was missing, added automatically.");
+            }
+        }
+        
+        // Always ensure AudioSource is enabled
+        if (stepAudioSource != null)
+        {
+            stepAudioSource.enabled = true;
+            stepAudioSource.playOnAwake = false;
+        }
+    }
 
     // Last played clips to avoid repetition
     private AudioClip lastWalkSound;
@@ -151,8 +172,14 @@ public class StepSounds : NetworkBehaviour
                 break;
         }
 
-        if (clipToPlay != null)
+        if (clipToPlay != null && stepAudioSource != null)
         {
+            // Ensure AudioSource is enabled before playing
+            if (!stepAudioSource.enabled)
+            {
+                stepAudioSource.enabled = true;
+            }
+            
             stepAudioSource.PlayOneShot(clipToPlay);
         }
     }
