@@ -2665,7 +2665,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1333635531
+  GlobalObjectIdHash: 2269254014
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2779,7 +2779,7 @@ MonoBehaviour:
   speedDampTime: 0.1
   jumpButton: Jump
   crouchButton: Crouch
-  jumpHeight: 1.5
+  jumpHeight: 1
   jumpInertialForce: 10
 --- !u!114 &5011516479969336083
 MonoBehaviour:
@@ -2956,6 +2956,8 @@ MonoBehaviour:
   twoHealthSpeedMultiplier: 0.75
   oneHealthSpeedMultiplier: 0.5
   injuredLayerTransitionDuration: 0.5
+  autoRunDuration: 4
+  autoRunSpeedMultiplier: 3
 --- !u!114 &8573953241626581556
 MonoBehaviour:
   m_ObjectHideFlags: 0

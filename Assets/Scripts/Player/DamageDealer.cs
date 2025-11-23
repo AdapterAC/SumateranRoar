@@ -77,8 +77,8 @@ public class DamageDealer : NetworkBehaviour
         
         if (playerHealth != null && playerHealth.IsAlive())
         {
-            // Deal damage
-            playerHealth.TakeDamage(damageAmount);
+            // Deal damage and pass attacker position
+            playerHealth.TakeDamage(damageAmount, transform.position);
             
             // Update last damage time
             lastDamageTime[playerObject] = Time.time;
@@ -96,7 +96,7 @@ public class DamageDealer : NetworkBehaviour
         
         if (playerHealth != null && playerHealth.IsAlive())
         {
-            playerHealth.TakeDamage(damage);
+            playerHealth.TakeDamage(damage, transform.position);
             Debug.Log($"{gameObject.name} manually dealt {damage} damage to {playerObject.name}");
         }
     }
