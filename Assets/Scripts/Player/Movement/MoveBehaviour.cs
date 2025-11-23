@@ -7,8 +7,10 @@ public class MoveBehaviour : GenericBehaviour
     public float walkSpeed = 0.15f;                 // Default walk speed.
     public float runSpeed = 1.0f;                   // Default run speed.
     public float sprintSpeed = 2.0f;                // Default sprint speed.
+    public float crouchSpeed = 1.5f;                // Crouch movement speed (script-based movement).
     public float speedDampTime = 0.1f;              // Default damp time to change the animations based on current speed.
     public string jumpButton = "Jump";              // Default jump button.
+    public string crouchButton = "Crouch";          // Default crouch button (configurable).
     public float jumpHeight = 1.5f;                 // Default jump height.
     public float jumpInertialForce = 10f;          // Default horizontal inertial force when jumping.
 
@@ -18,6 +20,8 @@ public class MoveBehaviour : GenericBehaviour
     private bool jump;                              // Boolean to determine whether or not the player started a jump.
     private bool isColliding;                       // Boolean to determine if the player has collided with an obstacle.
     private StepSounds stepSounds;                // Reference to the StepSounds script.
+    private bool isCrouching;                       // Boolean to determine if the player is crouching.
+    private int isCrouchingBool;                    // Animator variable related to crouching.
 
     // Start is always called after any Awake functions.
     void Start()
@@ -25,6 +29,7 @@ public class MoveBehaviour : GenericBehaviour
         // Set up the references.
         jumpBool = Animator.StringToHash("Jump");
         groundedBool = Animator.StringToHash("Grounded");
+        isCrouchingBool = Animator.StringToHash("IsCrouching");
         behaviourManager.GetAnim.SetBool(groundedBool, true);
         stepSounds = GetComponent<StepSounds>();
 
@@ -50,6 +55,8 @@ public class MoveBehaviour : GenericBehaviour
         {
             jump = true;
         }
+
+        CrouchManagement();
     }
 
     // LocalFixedUpdate overrides the virtual function of the base class.
@@ -60,6 +67,16 @@ public class MoveBehaviour : GenericBehaviour
 
         // Call the jump manager.
         JumpManagement();
+    }
+
+    void CrouchManagement()
+    {
+        // Use configurable crouch button instead of hardcoded LeftControl
+        if (Input.GetButtonDown(crouchButton) && behaviourManager.IsCurrentBehaviour(this.behaviourCode) && !behaviourManager.IsOverriding())
+        {
+            isCrouching = !isCrouching;
+            behaviourManager.GetAnim.SetBool(isCrouchingBool, isCrouching);
+        }
     }
 
     // Execute the idle and walk/run jump movements.
@@ -134,7 +151,7 @@ public class MoveBehaviour : GenericBehaviour
         }
 
         // Call function that deals with player orientation.
-        Rotating(horizontal, vertical);
+        Vector3 targetDirection = Rotating(horizontal, vertical);
 
         // Set proper speed.
         Vector2 dir = new Vector2(horizontal, vertical);
@@ -142,10 +159,26 @@ public class MoveBehaviour : GenericBehaviour
         // This is for PC only, gamepads control speed via analog stick.
         speedSeeker += Input.GetAxis("Mouse ScrollWheel");
         speedSeeker = Mathf.Clamp(speedSeeker, walkSpeed, runSpeed);
-        speed *= speedSeeker;
-        if (behaviourManager.IsSprinting())
+        
+        if (isCrouching)
         {
-            speed = sprintSpeed;
+            // Crouch animation is in-place, so move via script
+            speed *= walkSpeed; // Set animation speed for crouch
+            
+            // Manual movement for crouch (because animation is in-place)
+            if (targetDirection != Vector3.zero)
+            {
+                Vector3 crouchMovement = targetDirection.normalized * crouchSpeed * Time.fixedDeltaTime;
+                behaviourManager.GetRigidBody.MovePosition(behaviourManager.GetRigidBody.position + crouchMovement);
+            }
+        }
+        else
+        {
+            speed *= speedSeeker;
+            if (behaviourManager.IsSprinting())
+            {
+                speed = sprintSpeed;
+            }
         }
 
         behaviourManager.GetAnim.SetFloat(speedFloat, speed, speedDampTime, Time.deltaTime);
