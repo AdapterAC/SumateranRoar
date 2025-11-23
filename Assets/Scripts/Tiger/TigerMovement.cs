@@ -19,6 +19,8 @@ public class TigerMovement : NetworkBehaviour
     public float gravity = -20.0f;
     public float groundCheckDistance = 0.2f;
 
+    private StaminaController staminaController;
+    private StaminaUI staminaUI;
     private float verticalSpeed = 0f;
     private Vector3 moveDirection;
     private bool isGrounded;
@@ -34,6 +36,14 @@ public class TigerMovement : NetworkBehaviour
     // Network variables untuk sync animator parameters
     private NetworkVariable<float> networkSpeed = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private NetworkVariable<float> networkTurn = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    
+    // Network optimization variables
+    [Header("Network Optimization")]
+    public float networkUpdateRate = 0.1f; // Update network setiap 0.1 detik (10 updates/sec)
+    public float networkValueThreshold = 0.01f; // Hanya update jika perubahan > threshold
+    private float lastNetworkUpdateTime;
+    private float lastNetworkSpeed;
+    private float lastNetworkTurn;
 
     // Variabel untuk terrain adaptation
     [Header("Terrain Adaptation")]
@@ -45,6 +55,8 @@ public class TigerMovement : NetworkBehaviour
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        staminaController = GetComponent<StaminaController>();
+        staminaUI = GetComponentInChildren<StaminaUI>();
         
         // Jika camera transform tidak di-assign, coba cari Camera.main sebagai fallback
         if (cameraTransform == null)
@@ -135,7 +147,22 @@ public class TigerMovement : NetworkBehaviour
         float vertical = Input.GetAxis("Vertical"); // W/S atau Panah Atas/Bawah
 
         // Kecepatan saat ini (berjalan atau berlari)
-        bool isRunning = Input.GetKey(KeyCode.LeftShift) && vertical > 0; // Hanya bisa lari maju
+        bool wantsToRun = Input.GetKey(KeyCode.LeftShift) && vertical > 0; // Hanya bisa lari maju
+        bool canRunStamina = staminaController == null || staminaController.CanSprint();
+        bool isRunning = wantsToRun && canRunStamina;
+        
+        // Update stamina controller
+        if (staminaController != null)
+        {
+            staminaController.SetSprinting(isRunning);
+        }
+        
+        // Notify stamina UI about sprint state
+        if (staminaUI != null)
+        {
+            staminaUI.NotifySprinting(isRunning);
+        }
+        
         float currentSpeed = isRunning ? runSpeed : walkSpeed;
         
         // Rotasi harimau
@@ -246,16 +273,34 @@ public class TigerMovement : NetworkBehaviour
         smoothedSpeed = Mathf.Lerp(smoothedSpeed, targetAnimationSpeed, Time.deltaTime / animationSmoothTime);
         smoothedTurn = Mathf.Lerp(smoothedTurn, targetTurnAmount, Time.deltaTime / animationSmoothTime);
 
-        // 4. Update network variables dengan nilai yang sudah di-smooth
-        if (IsOwner)
-        {
-            networkSpeed.Value = smoothedSpeed;
-            networkTurn.Value = smoothedTurn;
-        }
-        
-        // 5. Update animator lokal untuk owner
+        // 4. Update animator lokal untuk owner (setiap frame)
         animator.SetFloat("Speed", smoothedSpeed);
         animator.SetFloat("Turn", smoothedTurn);
+        
+        // 5. Update network variables HANYA jika perlu (throttled + threshold)
+        if (IsOwner)
+        {
+            float timeSinceLastUpdate = Time.time - lastNetworkUpdateTime;
+            
+            // Update network hanya jika:
+            // - Sudah melewati update rate interval
+            // - DAN ada perubahan signifikan (> threshold)
+            if (timeSinceLastUpdate >= networkUpdateRate)
+            {
+                float speedDelta = Mathf.Abs(smoothedSpeed - lastNetworkSpeed);
+                float turnDelta = Mathf.Abs(smoothedTurn - lastNetworkTurn);
+                
+                if (speedDelta > networkValueThreshold || turnDelta > networkValueThreshold)
+                {
+                    networkSpeed.Value = smoothedSpeed;
+                    networkTurn.Value = smoothedTurn;
+                    
+                    lastNetworkSpeed = smoothedSpeed;
+                    lastNetworkTurn = smoothedTurn;
+                    lastNetworkUpdateTime = Time.time;
+                }
+            }
+        }
     }
 
     void HandleTerrainAdaptation()

@@ -21,6 +21,13 @@ public class PlayerHealth : NetworkBehaviour
     [Tooltip("Durasi transisi smooth untuk Injured layer weight")]
     [SerializeField] private float injuredLayerTransitionDuration = 0.5f;
 
+    [Header("Auto-Run After Hit Settings")]
+    [Tooltip("Durasi lari otomatis setelah terkena hit (dalam detik)")]
+    [SerializeField] private float autoRunDuration = 3f;
+    
+    [Tooltip("Kecepatan lari otomatis (multiplier dari sprint speed)")]
+    [SerializeField] private float autoRunSpeedMultiplier = 1.2f;
+
     [Header("References")]
     private Animator animator;
     private MoveBehaviour moveBehaviour;
@@ -38,6 +45,11 @@ public class PlayerHealth : NetworkBehaviour
     
     // Coroutine tracking
     private Coroutine injuredLayerTransitionCoroutine;
+    private Coroutine autoRunCoroutine;
+    
+    // Auto-run state tracking
+    private bool isAutoRunning = false;
+    private Vector3 attackerPosition;
     
     // Property untuk akses public
     public int CurrentHealth => currentHealth.Value;
@@ -262,13 +274,13 @@ public class PlayerHealth : NetworkBehaviour
         // TODO: Implement respawn logic atau game over screen
     }
 
-    // Public method untuk menerima damage
-    public void TakeDamage(int damageAmount = 1)
+    // Public method untuk menerima damage dengan posisi attacker
+    public void TakeDamage(int damageAmount = 1, Vector3 attackerPos = default)
     {
         if (!IsServer)
         {
             // Jika bukan server, minta server untuk mengurangi health
-            TakeDamageServerRpc(damageAmount);
+            TakeDamageServerRpc(damageAmount, attackerPos);
         }
         else
         {
@@ -277,18 +289,30 @@ public class PlayerHealth : NetworkBehaviour
             {
                 currentHealth.Value = Mathf.Max(0, currentHealth.Value - damageAmount);
                 Debug.Log($"Server: Player took {damageAmount} damage. Current health: {currentHealth.Value}");
+                
+                // Trigger auto-run on the owner's client
+                if (attackerPos != default)
+                {
+                    TriggerAutoRunClientRpc(attackerPos);
+                }
             }
         }
     }
 
     // Server RPC untuk handle damage
     [ServerRpc(RequireOwnership = false)] // Allow non-owners to call this
-    private void TakeDamageServerRpc(int damageAmount)
+    private void TakeDamageServerRpc(int damageAmount, Vector3 attackerPos = default)
     {
         if (currentHealth.Value > 0)
         {
             currentHealth.Value = Mathf.Max(0, currentHealth.Value - damageAmount);
             Debug.Log($"Server RPC: Player took {damageAmount} damage. Current health: {currentHealth.Value}");
+            
+            // Trigger auto-run on the owner's client
+            if (attackerPos != default)
+            {
+                TriggerAutoRunClientRpc(attackerPos);
+            }
         }
     }
 
@@ -389,5 +413,87 @@ public class PlayerHealth : NetworkBehaviour
             case 0: return "Dead";
             default: return "Unknown";
         }
+    }
+
+    // ClientRpc untuk trigger auto-run pada owner
+    [ClientRpc]
+    private void TriggerAutoRunClientRpc(Vector3 attackerPos)
+    {
+        if (!IsOwner) return;
+        
+        // Simpan posisi attacker dan mulai auto-run
+        attackerPosition = attackerPos;
+        
+        // Stop auto-run coroutine yang sedang berjalan jika ada
+        if (autoRunCoroutine != null)
+        {
+            StopCoroutine(autoRunCoroutine);
+        }
+        
+        // Mulai auto-run coroutine
+        autoRunCoroutine = StartCoroutine(AutoRunFromAttacker());
+    }
+
+    // Coroutine untuk auto-run menjauhi attacker
+    private IEnumerator AutoRunFromAttacker()
+    {
+        if (moveBehaviour == null || basicBehaviour == null) yield break;
+        if (!IsAlive()) yield break;
+        
+        isAutoRunning = true;
+        float elapsed = 0f;
+        
+        Rigidbody rb = basicBehaviour.GetRigidBody;
+        if (rb == null) yield break;
+        
+        Debug.Log($"Adrenaline mode activated! Running away from attacker for {autoRunDuration} seconds.");
+        
+        // Set animator to sprint speed immediately
+        int speedHash = Animator.StringToHash("Speed");
+        
+        while (elapsed < autoRunDuration)
+        {
+            // Hitung arah lari (menjauhi attacker)
+            Vector3 directionAwayFromAttacker = (transform.position - attackerPosition).normalized;
+            directionAwayFromAttacker.y = 0; // Keep movement on horizontal plane
+            
+            if (directionAwayFromAttacker != Vector3.zero)
+            {
+                // Rotate player to face away from attacker
+                Quaternion targetRotation = Quaternion.LookRotation(directionAwayFromAttacker);
+                Quaternion newRotation = Quaternion.Slerp(rb.rotation, targetRotation, basicBehaviour.turnSmoothing * 3f);
+                rb.MoveRotation(newRotation);
+                
+                // Calculate movement speed based on current health state
+                float baseSpeed = moveBehaviour.sprintSpeed * autoRunSpeedMultiplier;
+                float adjustedSpeed = baseSpeed * CurrentSpeedMultiplier; // Apply health penalty
+                
+                // Move player away from attacker using AddForce for smoother movement
+                Vector3 targetVelocity = directionAwayFromAttacker * adjustedSpeed;
+                targetVelocity.y = rb.linearVelocity.y; // Preserve vertical velocity (gravity)
+                rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, Time.fixedDeltaTime * 10f);
+                
+                // Set animator speed to sprint value (higher values = faster animation)
+                // Use sprintSpeed value directly for proper running animation
+                animator.SetFloat(speedHash, moveBehaviour.sprintSpeed);
+            }
+            
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        // Reset animator speed gradually
+        animator.SetFloat(speedHash, 0f);
+        
+        isAutoRunning = false;
+        autoRunCoroutine = null;
+        
+        Debug.Log("Adrenaline mode ended. Player regains manual control.");
+    }
+    
+    // Property untuk check apakah sedang auto-running
+    public bool IsAutoRunning()
+    {
+        return isAutoRunning;
     }
 }
