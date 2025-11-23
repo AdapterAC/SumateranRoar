@@ -446,7 +446,10 @@ public class PlayerHealth : NetworkBehaviour
         Rigidbody rb = basicBehaviour.GetRigidBody;
         if (rb == null) yield break;
         
-        Debug.Log($"Auto-run started! Running away from attacker for {autoRunDuration} seconds.");
+        Debug.Log($"Adrenaline mode activated! Running away from attacker for {autoRunDuration} seconds.");
+        
+        // Set animator to sprint speed immediately
+        int speedHash = Animator.StringToHash("Speed");
         
         while (elapsed < autoRunDuration)
         {
@@ -458,32 +461,34 @@ public class PlayerHealth : NetworkBehaviour
             {
                 // Rotate player to face away from attacker
                 Quaternion targetRotation = Quaternion.LookRotation(directionAwayFromAttacker);
-                Quaternion newRotation = Quaternion.Slerp(rb.rotation, targetRotation, basicBehaviour.turnSmoothing * 2f);
+                Quaternion newRotation = Quaternion.Slerp(rb.rotation, targetRotation, basicBehaviour.turnSmoothing * 3f);
                 rb.MoveRotation(newRotation);
                 
                 // Calculate movement speed based on current health state
                 float baseSpeed = moveBehaviour.sprintSpeed * autoRunSpeedMultiplier;
                 float adjustedSpeed = baseSpeed * CurrentSpeedMultiplier; // Apply health penalty
                 
-                // Move player away from attacker
-                Vector3 movement = directionAwayFromAttacker * adjustedSpeed * Time.fixedDeltaTime;
-                rb.MovePosition(rb.position + movement);
+                // Move player away from attacker using AddForce for smoother movement
+                Vector3 targetVelocity = directionAwayFromAttacker * adjustedSpeed;
+                targetVelocity.y = rb.linearVelocity.y; // Preserve vertical velocity (gravity)
+                rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, Time.fixedDeltaTime * 10f);
                 
-                // Set animator speed to show running animation
-                animator.SetFloat(Animator.StringToHash("Speed"), moveBehaviour.sprintSpeed, 0.1f, Time.deltaTime);
+                // Set animator speed to sprint value (higher values = faster animation)
+                // Use sprintSpeed value directly for proper running animation
+                animator.SetFloat(speedHash, moveBehaviour.sprintSpeed);
             }
             
             elapsed += Time.deltaTime;
             yield return null;
         }
         
-        // Reset animator speed
-        animator.SetFloat(Animator.StringToHash("Speed"), 0f, 0.1f, Time.deltaTime);
+        // Reset animator speed gradually
+        animator.SetFloat(speedHash, 0f);
         
         isAutoRunning = false;
         autoRunCoroutine = null;
         
-        Debug.Log("Auto-run completed. Player regains manual control.");
+        Debug.Log("Adrenaline mode ended. Player regains manual control.");
     }
     
     // Property untuk check apakah sedang auto-running
