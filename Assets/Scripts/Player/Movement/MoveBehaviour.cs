@@ -10,6 +10,7 @@ public class MoveBehaviour : GenericBehaviour
     public float crouchSpeed = 1.5f;                // Crouch movement speed (script-based movement).
     public float speedDampTime = 0.1f;              // Default damp time to change the animations based on current speed.
     public string jumpButton = "Jump";              // Default jump button.
+    public string crouchButton = "Crouch";          // Default crouch button (configurable).
     public float jumpHeight = 1.5f;                 // Default jump height.
     public float jumpInertialForce = 10f;          // Default horizontal inertial force when jumping.
 
@@ -70,7 +71,8 @@ public class MoveBehaviour : GenericBehaviour
 
     void CrouchManagement()
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl) && behaviourManager.IsCurrentBehaviour(this.behaviourCode) && !behaviourManager.IsOverriding())
+        // Use configurable crouch button instead of hardcoded LeftControl
+        if (Input.GetButtonDown(crouchButton) && behaviourManager.IsCurrentBehaviour(this.behaviourCode) && !behaviourManager.IsOverriding())
         {
             isCrouching = !isCrouching;
             behaviourManager.GetAnim.SetBool(isCrouchingBool, isCrouching);
