@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using FOV;
+using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Animator))]
@@ -8,6 +9,9 @@ using System.Collections.Generic;
 public class TigerCombat : NetworkBehaviour
 {
     [Header("Combat Settings")]
+    public AnimationClip attHitAnim;
+    public AnimationClip attMissAnim;
+    public CooldownUI cooldownUI;
     public float aimAssistRotationSpeed = 10f;
     public bool enableAimAssist = true;
     public bool instantAimRotation = true; // Opsi untuk instant rotation
@@ -15,6 +19,7 @@ public class TigerCombat : NetworkBehaviour
 
     private Animator animator;
     private FieldOfView fieldOfView;
+    private TigerMovement tigerMovement;
     private NetworkVariable<int> networkBiteIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     
     // Cooldown untuk mencegah spam dan memastikan animasi selesai
@@ -25,11 +30,13 @@ public class TigerCombat : NetworkBehaviour
     private bool rightClickPressed = false;
     private bool leftClickPressed = false;
     private bool eKeyPressed = false;
+    private bool isAttacking = false;
 
     void Awake()
     {
         animator = GetComponent<Animator>();
         fieldOfView = GetComponent<FieldOfView>();
+        tigerMovement = GetComponent<TigerMovement>();
     }
 
     public override void OnNetworkSpawn()
@@ -112,32 +119,32 @@ public class TigerCombat : NetworkBehaviour
     /// </summary>
     private void PerformAttack(int attackType)
     {
-        // Cek cooldown
-        if (Time.time - lastAttackTime < attackCooldown)
+        // Cek cooldown dan status attacking
+        if (Time.time - lastAttackTime < attackCooldown || isAttacking)
         {
-            if (debugMode) Debug.Log("Attack on cooldown");
+            if (debugMode) Debug.Log("Attack on cooldown or already attacking");
             return;
         }
-        
+
         lastAttackTime = Time.time;
-        
+        isAttacking = true;
+
         if (debugMode)
         {
             string attackName = attackType == 0 ? "Claw" : (attackType == 1 ? "Bite" : "Ultimate");
             Debug.Log($"[TigerCombat] Performing {attackName} attack at {Time.time}");
         }
-        
-        // Aim assist
+
+        // 1. Aim assist dulu
         AimAtNearestPlayerInFOV();
-        
-        // Trigger animasi lokal INSTANT
+
+        // 2. Trigger animasi attack (Claw/Bite/Ultimate) seperti biasa
         if (attackType == 0)
         {
             animator.SetTrigger("AttackClaw");
         }
         else if (attackType == 1)
         {
-            // Update bite index untuk owner
             if (IsServer)
             {
                 networkBiteIndex.Value = 1 - networkBiteIndex.Value;
@@ -149,10 +156,71 @@ public class TigerCombat : NetworkBehaviour
         {
             animator.SetTrigger("AttackUltimate");
         }
-        
-        // Sync ke network (non-blocking)
+
+        // 3. Sync ke network
         TriggerAttackServerRpc(attackType);
+
+        // 4. Mulai coroutine untuk attack sequence (attack anim → cek hit → cooldown anim)
+        StartCoroutine(AttackSequence(attackType));
     }
+
+    private IEnumerator AttackSequence(int attackType)
+    {
+        // Tunggu attack animation selesai (estimasi durasi attack animation)
+        // Untuk Claw/Bite biasanya ~0.5-1 detik, Ultimate mungkin lebih lama
+        float attackAnimDuration = attackType == 2 ? 1.5f : 0.8f;
+        yield return new WaitForSeconds(attackAnimDuration);
+
+        // Setelah attack animation selesai, CEK apakah kena player
+        bool playerHit = CheckHitPlayer();
+        
+        // Pilih animasi cooldown (hit atau miss)
+        AnimationClip cooldownAnim = playerHit ? attHitAnim : attMissAnim;
+        float cooldownDuration = cooldownAnim != null ? cooldownAnim.length : 1f;
+
+        // Nonaktifkan gerakan selama cooldown animation
+        if (tigerMovement != null)
+        {
+            tigerMovement.SetCanMove(false);
+        }
+
+        // Play animasi cooldown (hit/miss)
+        if (cooldownAnim != null)
+        {
+            animator.Play(cooldownAnim.name, 0, 0f);
+        }
+
+        // Tampilkan UI Cooldown
+        if (cooldownUI != null)
+        {
+            cooldownUI.StartCooldown(cooldownDuration);
+        }
+
+        // Sync cooldown animation ke network
+        PlayCooldownAnimServerRpc(cooldownAnim != null ? cooldownAnim.name : "");
+
+        // Tunggu cooldown animation selesai
+        yield return new WaitForSeconds(cooldownDuration);
+
+        // Setelah cooldown selesai, aktifkan kembali gerakan
+        isAttacking = false;
+        if (tigerMovement != null)
+        {
+            tigerMovement.SetCanMove(true);
+        }
+    }
+
+    /// <summary>
+    /// Cek apakah ada player di FOV saat ini (untuk menentukan hit/miss)
+    /// </summary>
+    private bool CheckHitPlayer()
+    {
+        if (fieldOfView == null) return false;
+
+        List<Transform> playersInFOV = fieldOfView.Field<Transform>("Player");
+        return playersInFOV.Count > 0;
+    }
+
 
     /// <summary>
     /// Mencari human terdekat dalam FOV dan memutar tiger ke arahnya (aim assist)
@@ -217,27 +285,45 @@ public class TigerCombat : NetworkBehaviour
         TriggerAttackClientRpc(attackType);
     }
 
+    [ServerRpc]
+    private void PlayCooldownAnimServerRpc(string animName)
+    {
+        // Broadcast cooldown animation ke semua client
+        PlayCooldownAnimClientRpc(animName);
+    }
+
     [ClientRpc]
     private void TriggerAttackClientRpc(int attackType)
     {
-        // Skip jika ini adalah owner (sudah di-trigger lokal di Update)
+        // Skip jika ini adalah owner (sudah di-trigger lokal di PerformAttack)
         if (IsOwner) return;
         
+        // Trigger attack animation
         if (attackType == 0)
         {
-            // Claw attack
             animator.SetTrigger("AttackClaw");
         }
         else if (attackType == 1)
         {
-            // Bite attack - update index dari network variable
             animator.SetInteger("BiteIndex", networkBiteIndex.Value);
             animator.SetTrigger("AttackBite");
         }
         else if (attackType == 2)
         {
-            // Ultimate attack
             animator.SetTrigger("AttackUltimate");
+        }
+    }
+
+    [ClientRpc]
+    private void PlayCooldownAnimClientRpc(string animName)
+    {
+        // Skip jika ini adalah owner (sudah di-play lokal di AttackSequence)
+        if (IsOwner) return;
+        
+        // Play cooldown animation (hit/miss)
+        if (!string.IsNullOrEmpty(animName))
+        {
+            animator.Play(animName, 0, 0f);
         }
     }
 }

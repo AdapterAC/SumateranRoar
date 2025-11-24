@@ -33,6 +33,9 @@ public class TigerMovement : NetworkBehaviour
     // Variabel untuk akumulasi input mouse
     private float mouseInputAccumulator = 0f;
 
+    // State untuk mengontrol pergerakan
+    private bool canMove = true;
+
     // Network variables untuk sync animator parameters
     private NetworkVariable<float> networkSpeed = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private NetworkVariable<float> networkTurn = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -132,9 +135,38 @@ public class TigerMovement : NetworkBehaviour
         // Hanya owner yang bisa mengontrol
         if (!IsOwner) return;
 
-        HandleMovement();
-        HandleAnimation();
+        if (canMove)
+        {
+            HandleMovement();
+            HandleAnimation();
+        }
+        // Selalu panggil terrain adaptation agar harimau tetap menempel di tanah bahkan saat tidak bergerak
         HandleTerrainAdaptation();
+    }
+
+    public void SetCanMove(bool move)
+    {
+        canMove = move;
+        if (!move)
+        {
+            // Jika tidak bisa bergerak, paksa animasi ke idle dan hentikan momentum.
+            // Ini mencegah gerakan mundur yang tidak diinginkan.
+            if (IsOwner)
+            {
+                // Reset semua variable animasi termasuk smoothed values
+                smoothedSpeed = 0f;
+                smoothedTurn = 0f;
+                animator.SetFloat("Speed", 0f);
+                animator.SetFloat("Turn", 0f);
+                networkSpeed.Value = 0f;
+                networkTurn.Value = 0f;
+            }
+            // Hentikan pergerakan fisik
+            if (controller.enabled)
+            {
+                controller.Move(Vector3.zero);
+            }
+        }
     }
 
     void HandleMovement()
