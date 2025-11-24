@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2889977648776839291}
   - component: {fileID: 9186897409136058594}
   - component: {fileID: 103965890987109984}
-  - component: {fileID: 6714098003559070264}
+  - component: {fileID: 8198383234834450923}
   m_Layer: 6
   m_Name: Canvas
   m_TagString: Untagged
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &6714098003559070264
+--- !u!114 &8198383234834450923
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1218,7 +1218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1954946
+  GlobalObjectIdHash: 599893389
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1622,7 +1622,7 @@ MonoBehaviour:
   maxStamina: 150
   staminaConsumptionRate: 15
   staminaRegenerationRate: 15
-  staminaExhaustionThreshold: 150
+  staminaExhaustionThreshold: 50
 --- !u!95 &6050810328132306229 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 9500000, guid: 9f271cac34f8a384fbd96577f2846b24, type: 3}

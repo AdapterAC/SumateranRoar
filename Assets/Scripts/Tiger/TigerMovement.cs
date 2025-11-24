@@ -225,7 +225,11 @@ public class TigerMovement : NetworkBehaviour
     {
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
-        bool isRunning = Input.GetKey(KeyCode.LeftShift);
+        
+        // Check stamina untuk animasi yang benar
+        bool wantsToRun = Input.GetKey(KeyCode.LeftShift) && vertical > 0;
+        bool canRunStamina = staminaController == null || staminaController.CanSprint();
+        bool isRunning = wantsToRun && canRunStamina;
 
         // 1. Tentukan target speed untuk animasi
         float targetAnimationSpeed = 0.0f;

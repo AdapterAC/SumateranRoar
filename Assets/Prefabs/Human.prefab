@@ -3706,7 +3706,7 @@ MonoBehaviour:
   maxStamina: 100
   staminaConsumptionRate: 20
   staminaRegenerationRate: 15
-  staminaExhaustionThreshold: 100
+  staminaExhaustionThreshold: 50
 --- !u!137 &6278553096427251546 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 956782736964190159, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
