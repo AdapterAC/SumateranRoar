@@ -3357,6 +3357,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: ac87085723d9d1c4cac9e328f2f5cd91, type: 3}
     - {fileID: 8300000, guid: b242f106a64112340ae118d0987eed9d, type: 3}
     - {fileID: 8300000, guid: a9b25f39b695fa740ab565e3298cfcc3, type: 3}
+  stepSoundCooldown: 0.2
+  enableDebugLogs: 0
 --- !u!82 &672073331507082401
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3370,7 +3372,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.45
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -3378,8 +3380,8 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 1.2
+  MaxDistance: 15
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -3706,7 +3708,7 @@ MonoBehaviour:
   maxStamina: 100
   staminaConsumptionRate: 20
   staminaRegenerationRate: 15
-  staminaExhaustionThreshold: 100
+  staminaExhaustionThreshold: 50
 --- !u!137 &6278553096427251546 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 956782736964190159, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}

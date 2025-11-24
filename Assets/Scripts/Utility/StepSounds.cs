@@ -10,7 +10,21 @@ public class StepSounds : NetworkBehaviour
     [Header("Surface Sounds")]
     public SurfaceSound[] surfaceSounds;
 
+    [Header("Sound Settings")]
+    [Tooltip("Minimum time between step sounds to prevent overlapping (in seconds)")]
+    public float stepSoundCooldown = 0.3f;
+    
+    [Header("Debug")]
+    [Tooltip("Enable to see debug logs when sounds are played or blocked")]
+    public bool enableDebugLogs = false;
+
     private string currentSurfaceTag = "DirtyGround";
+    
+    // Cooldown tracking
+    private float lastWalkSoundTime = -999f;
+    private float lastRunSoundTime = -999f;
+    private float lastJumpStartSoundTime = -999f;
+    private float lastJumpEndSoundTime = -999f;
     
     void Awake()
     {
@@ -53,6 +67,23 @@ public class StepSounds : NetworkBehaviour
     public void PlayWalkSound()
     {
         if (!IsOwner) return;
+        
+        // Check cooldown to prevent rapid successive calls
+        if (Time.time - lastWalkSoundTime < stepSoundCooldown)
+        {
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[StepSounds] Walk sound blocked - cooldown active ({Time.time - lastWalkSoundTime:F3}s since last)");
+            }
+            return;
+        }
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[StepSounds] Playing walk sound at {Time.time:F2}");
+        }
+        
+        lastWalkSoundTime = Time.time;
         PlayStepSound("walk");
     }
 
@@ -60,6 +91,23 @@ public class StepSounds : NetworkBehaviour
     public void PlayRunSound()
     {
         if (!IsOwner) return;
+        
+        // Check cooldown to prevent rapid successive calls
+        if (Time.time - lastRunSoundTime < stepSoundCooldown)
+        {
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[StepSounds] Run sound blocked - cooldown active ({Time.time - lastRunSoundTime:F3}s since last)");
+            }
+            return;
+        }
+        
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[StepSounds] Playing run sound at {Time.time:F2}");
+        }
+        
+        lastRunSoundTime = Time.time;
         PlayStepSound("run");
     }
 
@@ -67,6 +115,14 @@ public class StepSounds : NetworkBehaviour
     public void PlayJumpStartSound()
     {
         if (!IsOwner) return;
+        
+        // Check cooldown to prevent rapid successive calls
+        if (Time.time - lastJumpStartSoundTime < stepSoundCooldown)
+        {
+            return;
+        }
+        
+        lastJumpStartSoundTime = Time.time;
         PlayStepSound("jumpStart");
     }
 
@@ -74,6 +130,14 @@ public class StepSounds : NetworkBehaviour
     public void PlayJumpEndSound()
     {
         if (!IsOwner) return;
+        
+        // Check cooldown to prevent rapid successive calls
+        if (Time.time - lastJumpEndSoundTime < stepSoundCooldown)
+        {
+            return;
+        }
+        
+        lastJumpEndSoundTime = Time.time;
         PlayStepSound("jumpEnd");
     }
 
