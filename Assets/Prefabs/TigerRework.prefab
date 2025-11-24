@@ -1325,7 +1325,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TigerCombat
   ShowTopMostFoldoutHeaderGroup: 1
-  aimAssistRotationSpeed: 10
+  aimAssistRotationSpeed: 20
   enableAimAssist: 1
 --- !u!114 &4480026319479194528
 MonoBehaviour:
