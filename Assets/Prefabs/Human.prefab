@@ -2941,7 +2941,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1333635531
+  GlobalObjectIdHash: 2269254014
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3358,6 +3358,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: b242f106a64112340ae118d0987eed9d, type: 3}
     - {fileID: 8300000, guid: a9b25f39b695fa740ab565e3298cfcc3, type: 3}
   stepSoundCooldown: 0.2
+  enableDebugLogs: 0
 --- !u!82 &672073331507082401
 AudioSource:
   m_ObjectHideFlags: 0
