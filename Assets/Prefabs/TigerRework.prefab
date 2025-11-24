@@ -322,8 +322,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.26554522, y: 0.40846476, z: 0.42602465}
-  m_Center: {x: -0.1309675, y: -0.1440527, z: 0.02912117}
+  m_Size: {x: 1.4349728, y: 0.61715317, z: 0.479002}
+  m_Center: {x: 0.45374668, y: -0.03970852, z: 0.055610254}
 --- !u!114 &2459412063226454520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1327,6 +1327,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   aimAssistRotationSpeed: 20
   enableAimAssist: 1
+  instantAimRotation: 1
+  debugMode: 0
+  attackCooldown: 0.1
 --- !u!114 &4480026319479194528
 MonoBehaviour:
   m_ObjectHideFlags: 0
