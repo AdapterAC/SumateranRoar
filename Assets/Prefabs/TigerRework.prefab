@@ -1218,7 +1218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 599893389
+  GlobalObjectIdHash: 1954946
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1509,6 +1509,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: ac87085723d9d1c4cac9e328f2f5cd91, type: 3}
     - {fileID: 8300000, guid: b242f106a64112340ae118d0987eed9d, type: 3}
     - {fileID: 8300000, guid: a9b25f39b695fa740ab565e3298cfcc3, type: 3}
+  stepSoundCooldown: 0.3
+  enableDebugLogs: 0
 --- !u!82 &3659787026891854747
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1522,14 +1524,14 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.7
-  m_Pitch: 0.82
+  m_Volume: 0.5
+  m_Pitch: 0.8
   Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 100
-  DopplerLevel: 0
+  Priority: 128
+  DopplerLevel: 1
   MinDistance: 3
   MaxDistance: 40
   Pan2D: 0
@@ -1566,7 +1568,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
