@@ -14,10 +14,18 @@ public class AnimationSoundPlayer : MonoBehaviour
     {
         public string name;
         public AudioClip clip;
+        [Range(0f, 1f)]
+        [Tooltip("Volume for this specific sound (0 = silent, 1 = full volume)")]
+        public float volume = 1f;
     }
 
     [Tooltip("The list of sounds that can be played by this component.")]
     public List<Sound> sounds = new List<Sound>();
+    
+    [Header("Global Volume Settings")]
+    [Range(0f, 1f)]
+    [Tooltip("Master volume multiplier for all sounds (0 = silent, 1 = full volume)")]
+    public float masterVolume = 1f;
     
     private AudioSource audioSource;
 
@@ -41,7 +49,9 @@ public class AnimationSoundPlayer : MonoBehaviour
         {
             // Play the found audio clip as a one-shot sound.
             // PlayOneShot allows multiple sounds to be played without cutting each other off.
-            audioSource.PlayOneShot(soundToPlay.clip);
+            // Apply both the individual sound volume and master volume
+            float finalVolume = soundToPlay.volume * masterVolume;
+            audioSource.PlayOneShot(soundToPlay.clip, finalVolume);
         }
         else
         {
