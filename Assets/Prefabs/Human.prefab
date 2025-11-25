@@ -2323,6 +2323,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2437234271908842288}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -1972641181831771179}
   m_SourcePrefab: {fileID: 100100000, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
 --- !u!137 &35932911057038716 stripped
 SkinnedMeshRenderer:
@@ -2941,7 +2944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1333635531
+  GlobalObjectIdHash: 2269254014
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3709,6 +3712,26 @@ MonoBehaviour:
   staminaConsumptionRate: 20
   staminaRegenerationRate: 15
   staminaExhaustionThreshold: 50
+--- !u!114 &-1972641181831771179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6244139467226834372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c21a372181c3ff244818c8a03aa83b78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationSoundPlayer
+  sounds:
+  - name: hit
+    clip: {fileID: 8300000, guid: 26d51b98a914fe8448c45ee9c82ebf99, type: 3}
+    volume: 0.5
+  - name: death
+    clip: {fileID: 8300000, guid: 8a08d522fb5d2374ca429ccb0b3d0819, type: 3}
+    volume: 0.5
+  masterVolume: 1
 --- !u!137 &6278553096427251546 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 956782736964190159, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
