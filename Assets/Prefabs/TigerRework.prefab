@@ -512,6 +512,7 @@ GameObject:
   - component: {fileID: 8399532061611254026}
   - component: {fileID: 2750186869651150062}
   - component: {fileID: 8855180326361143920}
+  - component: {fileID: 4062059311395251}
   m_Layer: 6
   m_Name: CooldownContainer
   m_TagString: Untagged
@@ -577,6 +578,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4062059311395251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6455488728009843571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2bd6b8e98594ed43838424f6f434932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CooldownUI
+  imageCooldown: {fileID: 1174254501270044662}
 --- !u!1 &7018537215680136644
 GameObject:
   m_ObjectHideFlags: 0
@@ -588,7 +602,6 @@ GameObject:
   - component: {fileID: 6220462592170401454}
   - component: {fileID: 9155321376100057352}
   - component: {fileID: 1174254501270044662}
-  - component: {fileID: 8393217441388989959}
   m_Layer: 6
   m_Name: CooldownBarImage
   m_TagString: Untagged
@@ -653,19 +666,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8393217441388989959
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7018537215680136644}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2bd6b8e98594ed43838424f6f434932, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CooldownUI
-  imageCooldown: {fileID: 1174254501270044662}
 --- !u!1001 &6050810328122896469
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1493,10 +1493,10 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   attHitAnim: {fileID: 7400000, guid: f373fe3d46f52b144a9b7171753ecf46, type: 2}
   attMissAnim: {fileID: 7400000, guid: d90bf166c52d3ac4bbb4774fb2a7c504, type: 2}
-  cooldownUI: {fileID: 8393217441388989959}
+  cooldownUI: {fileID: 4062059311395251}
   aimAssistRotationSpeed: 20
   enableAimAssist: 1
-  instantAimRotation: 1
+  instantAimRotation: 0
   debugMode: 0
   attackCooldown: 0.1
 --- !u!114 &4480026319479194528
