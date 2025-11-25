@@ -151,7 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThirdPersonOrbitCamBasic
   player: {fileID: 6767911263339888510}
-  pivotOffset: {x: 0, y: 1.35, z: 0}
+  pivotOffset: {x: 0, y: 1.4, z: 0}
   camOffset: {x: 0, y: 0, z: -3}
   smooth: 10
   horizontalAimingSpeed: 6
@@ -3037,7 +3037,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BasicBehaviour
   playerCamera: {fileID: 5933708254019090032}
   turnSmoothing: 0.06
-  sprintFOV: 50
+  sprintFOV: 70
   sprintButton: Sprint
 --- !u!114 &4304930260614572938
 MonoBehaviour:
@@ -3051,10 +3051,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5873c01f6c76d449b3b575129ca5583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveBehaviour
-  walkSpeed: 0.5
-  runSpeed: 1
-  sprintSpeed: 1
-  crouchSpeed: 1
+  walkSpeed: 0.2
+  runSpeed: 0.8
+  sprintSpeed: 0.8
+  crouchSpeed: 1.5
   speedDampTime: 0.1
   jumpButton: Jump
   crouchButton: Crouch
