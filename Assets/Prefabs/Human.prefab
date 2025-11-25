@@ -3054,7 +3054,7 @@ MonoBehaviour:
   walkSpeed: 0.5
   runSpeed: 1
   sprintSpeed: 1
-  crouchSpeed: 0.3
+  crouchSpeed: 1
   speedDampTime: 0.1
   jumpButton: Jump
   crouchButton: Crouch

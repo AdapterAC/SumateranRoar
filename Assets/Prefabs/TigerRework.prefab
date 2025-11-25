@@ -1467,8 +1467,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   cameraTransform: {fileID: 2359598563206670013}
   cameraScript: {fileID: 0}
-  walkSpeed: 1
-  runSpeed: 2
+  walkSpeed: 0.8
+  runSpeed: 1.2
   turnSpeed: 20
   mouseTurnSpeed: 45
   gravity: -20
