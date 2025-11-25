@@ -162,7 +162,7 @@ public class StepSounds : NetworkBehaviour
             int clipIndex = GetRandomClipIndex(clips, lastClip);
 
             // Play sound locally immediately for the owner
-            PlaySound(clipIndex, type, currentSurfaceTag);
+            PlaySoundInternal(clipIndex, type, currentSurfaceTag);
 
             // Tell the server to tell other clients to play the sound
             PlayStepSoundServerRpc(clipIndex, type, currentSurfaceTag);
@@ -185,10 +185,10 @@ public class StepSounds : NetworkBehaviour
     [ClientRpc]
     private void PlayStepSoundClientRpc(int clipIndex, string type, string surfaceTag, ClientRpcParams clientRpcParams = default)
     {
-        PlaySound(clipIndex, type, surfaceTag);
+        PlaySoundInternal(clipIndex, type, surfaceTag);
     }
 
-    private void PlaySound(int clipIndex, string type, string surfaceTag)
+    private void PlaySoundInternal(int clipIndex, string type, string surfaceTag)
     {
         SurfaceSound surface = null;
         foreach (var s in surfaceSounds)
@@ -247,7 +247,6 @@ public class StepSounds : NetworkBehaviour
             stepAudioSource.PlayOneShot(clipToPlay);
         }
     }
-
 
     private SurfaceSound GetCurrentSurfaceSound()
     {
