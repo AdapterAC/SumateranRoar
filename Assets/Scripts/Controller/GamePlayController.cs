@@ -9,7 +9,7 @@ public class GamePlayController : NetworkBehaviour
     [SerializeField] private GameObject playerTigerPrefab;
 
     private Vector3 spawnHumanPosition = new(2.76f, 5f, -25.32f);
-    private Vector3 spawnTigerPosition = new(8.15f, 5f, -24.61f);
+    private Vector3 spawnTigerPosition = new(37f, 8f, 53f);
 
 
     public override void OnNetworkSpawn()
