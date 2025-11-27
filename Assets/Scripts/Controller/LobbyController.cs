@@ -29,15 +29,14 @@ public class LobbyController : MonoBehaviour
 
     private void OnStartButtonClicked()
     {
-        // Arahkan ke gameplay scene dan spawn player secara random
-        ScreenLogger.Log($"OnStartButtonClicked - Berhasil dijalankan", ScreenLogger.LogType.Success);
-        // Debug.Log($"OnStartButtonClicked - IsHost: {IsHost}");
-        // Debug.Log($"OnStartButtonClicked - IsServer: {IsServer}");
-        // Debug.Log($"OnStartButtonClicked - IsClient: {IsClient}");
-        // Debug.Log($"OnStartButtonClicked - IsOwner: {IsOwner}");
-        // Debug.Log($"OnStartButtonClicked - IsHost: {NetworkManager.Singleton.IsHost}");
-        // if (NetworkManager.Singleton.IsHost) StartGameServerRpc();
-        GameManagerNetwork.Instance.StartGameServerRpc();
+        // Arahkan ke scene Maps1 (bukan GamePlay lagi)
+        ScreenLogger.Log($"OnStartButtonClicked - Load Maps1", ScreenLogger.LogType.Success);
+
+        // Jika ingin load lewat Netcode SceneManager (sinkron semua client)
+        if (NetworkManager.Singleton.IsHost)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene("Maps1", LoadSceneMode.Single);
+        }
     }
 
     // Update is called once per frame
