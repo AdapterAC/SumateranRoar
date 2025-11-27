@@ -20,6 +20,9 @@ public class ScreenLogger : MonoBehaviour
     private static GUIStyle textStyle;
     private static Vector2 scrollPosition;
 
+    private const float LOG_WINDOW_WIDTH = 450f;
+    private const float LOG_WINDOW_HEIGHT = 300f;
+
     private struct LogEntry
     {
         public string message;
@@ -57,24 +60,29 @@ public class ScreenLogger : MonoBehaviour
     {
         if (!showLogs) return;
 
-        float width = 450f;
-        float height = 300f;
-        GUILayout.BeginArea(new Rect(10, 10, width, height), GUI.skin.box);
+        // Use constants for window dimensions
+        GUILayout.BeginArea(new Rect(10, 10, LOG_WINDOW_WIDTH, LOG_WINDOW_HEIGHT), GUI.skin.box);
         GUILayout.Label("<b><size=16>📜 DEBUG LOGGER</size></b>", textStyle);
 
         scrollPosition = GUILayout.BeginScrollView(scrollPosition);
+
+        // Cache colors to avoid creating new Color objects in a loop
+        Color successColor = Color.green;
+        Color errorColor = Color.red;
+        Color infoColor = Color.yellow;
+
         foreach (var entry in logs)
         {
             switch (entry.type)
             {
                 case LogType.Success:
-                    textStyle.normal.textColor = Color.green;
+                    textStyle.normal.textColor = successColor;
                     break;
                 case LogType.Error:
-                    textStyle.normal.textColor = Color.red;
+                    textStyle.normal.textColor = errorColor;
                     break;
                 default:
-                    textStyle.normal.textColor = Color.yellow;
+                    textStyle.normal.textColor = infoColor;
                     break;
             }
 

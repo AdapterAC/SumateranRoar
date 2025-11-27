@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 3
   tags:
   - Hunter
+  - SpawnPoint
+  - Tile
+  - Grass
+  - Metal
+  - Rock
   layers:
   - Default
   - TransparentFX
@@ -12,7 +17,7 @@ TagManager:
   - 
   - Water
   - UI
-  - Human
+  - Player
   - Tiger
   - Terrain
   - 
