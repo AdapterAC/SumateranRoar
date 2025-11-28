@@ -8,8 +8,8 @@ public class GamePlayController : NetworkBehaviour
     [SerializeField] private GameObject playerHumanPrefab;
     [SerializeField] private GameObject playerTigerPrefab;
 
-    private Vector3 spawnHumanPosition = new(2.76f, 5f, -25.32f);
-    private Vector3 spawnTigerPosition = new(8.15f, 5f, -24.61f);
+    private Vector3 spawnHumanPosition = new(341f, 4f, 811f);
+    private Vector3 spawnTigerPosition = new(341f, 4f, 824f);
 
 
     public override void OnNetworkSpawn()
