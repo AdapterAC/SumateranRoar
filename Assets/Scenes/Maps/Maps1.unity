@@ -543,7 +543,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 256
-  yOffset: 8
+  yOffset: 2
 --- !u!4 &66384296
 Transform:
   m_ObjectHideFlags: 0
@@ -2646,7 +2646,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 256
-  yOffset: 8
+  yOffset: 2
 --- !u!4 &645253608
 Transform:
   m_ObjectHideFlags: 0
@@ -4038,7 +4038,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 256
-  yOffset: 8
+  yOffset: 2
 --- !u!4 &1099498977
 Transform:
   m_ObjectHideFlags: 0
@@ -7398,7 +7398,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 256
-  yOffset: 8
+  yOffset: 2
 --- !u!4 &2001531720
 Transform:
   m_ObjectHideFlags: 0
