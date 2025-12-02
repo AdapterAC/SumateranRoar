@@ -1869,6 +1869,12 @@ MonoBehaviour:
   - name: roar1
     clip: {fileID: 8300000, guid: df953cf22d367e045a9f8ac252e080f0, type: 3}
     volume: 0.5
+  - name: hit
+    clip: {fileID: 8300000, guid: 74123cd0d58cf434ba3a5be785d5505a, type: 3}
+    volume: 0.5
+  - name: growl
+    clip: {fileID: 8300000, guid: 5a8cc8237b1aeef43a4492b5f0bfb745, type: 3}
+    volume: 0.5
   masterVolume: 1
 --- !u!95 &6050810328132306229 stripped
 Animator:
