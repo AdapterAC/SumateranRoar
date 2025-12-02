@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8eb39bb5d5c890f46bfdf1bda7d835d3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 238456
+  packageName: Terrain Scanner VFX
+  packageVersion: 1.0
+  assetPath: Assets/TerrainScanner/Demo/Materials/CameraEffects/RevealPost.mat
+  uploadId: 541307

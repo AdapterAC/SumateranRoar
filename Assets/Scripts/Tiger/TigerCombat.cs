@@ -11,7 +11,6 @@ public class TigerCombat : NetworkBehaviour
     [Header("Combat Settings")]
     public AnimationClip attHitAnim;
     public AnimationClip attMissAnim;
-    public CooldownUI cooldownUI;
     public float aimAssistRotationSpeed = 10f;
     public bool enableAimAssist = true;
     public bool instantAimRotation = true; // Opsi untuk instant rotation
@@ -20,7 +19,6 @@ public class TigerCombat : NetworkBehaviour
     private Animator animator;
     private FieldOfView fieldOfView;
     private TigerMovement tigerMovement;
-    private NetworkVariable<int> networkBiteIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     
     // Cooldown untuk mencegah spam dan memastikan animasi selesai
     private float lastAttackTime = 0f;
@@ -29,7 +27,6 @@ public class TigerCombat : NetworkBehaviour
     // Input buffering untuk mengatasi missed input
     private bool rightClickPressed = false;
     private bool leftClickPressed = false;
-    private bool eKeyPressed = false;
     private bool isAttacking = false;
 
     void Awake()
@@ -42,22 +39,11 @@ public class TigerCombat : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        networkBiteIndex.OnValueChanged += OnBiteIndexChanged;
     }
 
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        networkBiteIndex.OnValueChanged -= OnBiteIndexChanged;
-    }
-
-    private void OnBiteIndexChanged(int previous, int current)
-    {
-        // Hanya client yang perlu update animator dari network variable
-        if (!IsServer)
-        {
-            animator.SetInteger("BiteIndex", current);
-        }
     }
 
     // Update dipanggil DULU untuk capture input
@@ -76,11 +62,6 @@ public class TigerCombat : NetworkBehaviour
         {
             leftClickPressed = true;
             if (debugMode) Debug.Log($"[Input] Left click detected at frame {Time.frameCount}");
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            eKeyPressed = true;
-            if (debugMode) Debug.Log($"[Input] E key detected at frame {Time.frameCount}");
         }
     }
 
@@ -102,14 +83,6 @@ public class TigerCombat : NetworkBehaviour
         {
             leftClickPressed = false;
             PerformAttack(0); // Claw attack
-            return;
-        }
-
-        // Tombol E (bite)
-        if (eKeyPressed)
-        {
-            eKeyPressed = false;
-            PerformAttack(1); // Bite attack
             return;
         }
     }
@@ -138,19 +111,10 @@ public class TigerCombat : NetworkBehaviour
         // 1. Aim assist dulu
         AimAtNearestPlayerInFOV();
 
-        // 2. Trigger animasi attack (Claw/Bite/Ultimate) seperti biasa
+        // 2. Trigger animasi attack (Claw/Ultimate) seperti biasa
         if (attackType == 0)
         {
             animator.SetTrigger("AttackClaw");
-        }
-        else if (attackType == 1)
-        {
-            if (IsServer)
-            {
-                networkBiteIndex.Value = 1 - networkBiteIndex.Value;
-            }
-            animator.SetInteger("BiteIndex", 1 - animator.GetInteger("BiteIndex"));
-            animator.SetTrigger("AttackBite");
         }
         else if (attackType == 2)
         {
@@ -188,12 +152,6 @@ public class TigerCombat : NetworkBehaviour
         if (cooldownAnim != null)
         {
             animator.Play(cooldownAnim.name, 0, 0f);
-        }
-
-        // Tampilkan UI Cooldown
-        if (cooldownUI != null)
-        {
-            cooldownUI.StartCooldown(cooldownDuration);
         }
 
         // Sync cooldown animation ke network
@@ -275,12 +233,6 @@ public class TigerCombat : NetworkBehaviour
     [ServerRpc]
     private void TriggerAttackServerRpc(int attackType)
     {
-        if (attackType == 1) // Bite attack
-        {
-            // Ganti index di server
-            networkBiteIndex.Value = 1 - networkBiteIndex.Value;
-        }
-        
         // Broadcast ke semua client (kecuali owner yang sudah trigger lokal)
         TriggerAttackClientRpc(attackType);
     }
@@ -302,11 +254,6 @@ public class TigerCombat : NetworkBehaviour
         if (attackType == 0)
         {
             animator.SetTrigger("AttackClaw");
-        }
-        else if (attackType == 1)
-        {
-            animator.SetInteger("BiteIndex", networkBiteIndex.Value);
-            animator.SetTrigger("AttackBite");
         }
         else if (attackType == 2)
         {
