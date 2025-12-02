@@ -263,15 +263,64 @@ public class PlayerHealth : NetworkBehaviour
         
         Debug.Log("Death animation triggered");
         
-        // Optional: Call game over atau respawn setelah delay
-        Invoke(nameof(OnPlayerDeath), 3f); // Delay 3 detik untuk animasi
+        // Call death handler setelah delay untuk animasi
+        if (IsServer)
+        {
+            StartCoroutine(OnPlayerDeathDelayed());
+        }
+    }
+
+    // Coroutine untuk delay death notification
+    private IEnumerator OnPlayerDeathDelayed()
+    {
+        // Tunggu animasi death selesai
+        yield return new WaitForSeconds(3f);
+        
+        OnPlayerDeath();
     }
 
     // Callback ketika player mati (bisa di-override atau ditambah event)
     private void OnPlayerDeath()
     {
-        Debug.Log("Player death complete. Implement respawn or game over logic here.");
-        // TODO: Implement respawn logic atau game over screen
+        Debug.Log("[PlayerHealth] Player death complete.");
+        
+        // Notify GameStateManager jika ini adalah human player
+        if (IsServer)
+        {
+            // Retry dengan delay jika GameStateManager belum ready
+            StartCoroutine(NotifyGameStateManagerDeath());
+        }
+    }
+    
+    private IEnumerator NotifyGameStateManagerDeath()
+    {
+        // Wait dan retry sampai GameStateManager ready
+        float timeout = 5f;
+        float elapsed = 0f;
+        
+        while (GameStateManager.Instance == null && elapsed < timeout)
+        {
+            Debug.LogWarning("[PlayerHealth] Waiting for GameStateManager...");
+            yield return new WaitForSeconds(0.5f);
+            elapsed += 0.5f;
+        }
+        
+        if (GameStateManager.Instance == null)
+        {
+            Debug.LogError("[PlayerHealth] GameStateManager tidak ditemukan setelah timeout! Death tidak tercatat.");
+            yield break;
+        }
+        
+        ulong clientId = OwnerClientId;
+        if (GameStateManager.Instance.IsHuman(clientId))
+        {
+            Debug.Log($"[PlayerHealth] Notifying GameStateManager: Human player died (ClientId: {clientId})");
+            GameStateManager.Instance.OnHumanDied(clientId);
+        }
+        else
+        {
+            Debug.Log($"[PlayerHealth] Non-human player died (ClientId: {clientId}). Tidak perlu notify.");
+        }
     }
 
     // Public method untuk menerima damage dengan posisi attacker
@@ -468,10 +517,13 @@ public class PlayerHealth : NetworkBehaviour
                 float baseSpeed = moveBehaviour.sprintSpeed * autoRunSpeedMultiplier;
                 float adjustedSpeed = baseSpeed * CurrentSpeedMultiplier; // Apply health penalty
                 
-                // Move player away from attacker using AddForce for smoother movement
-                Vector3 targetVelocity = directionAwayFromAttacker * adjustedSpeed;
-                targetVelocity.y = rb.linearVelocity.y; // Preserve vertical velocity (gravity)
-                rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, Time.fixedDeltaTime * 10f);
+                // Move player away from attacker - check if kinematic first
+                if (!rb.isKinematic)
+                {
+                    Vector3 targetVelocity = directionAwayFromAttacker * adjustedSpeed;
+                    targetVelocity.y = rb.linearVelocity.y; // Preserve vertical velocity (gravity)
+                    rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, Time.fixedDeltaTime * 10f);
+                }
                 
                 // Set animator speed to sprint value (higher values = faster animation)
                 // Use sprintSpeed value directly for proper running animation

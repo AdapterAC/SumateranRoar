@@ -10,6 +10,10 @@ public class GamePlayController : NetworkBehaviour
     [SerializeField] private GameObject playerHumanPrefab;
     [SerializeField] private GameObject playerTigerPrefab;
 
+    [Header("Game State Manager")]
+    [Tooltip("Prefab GameStateManager untuk di-spawn di server")]
+    [SerializeField] private GameObject gameStateManagerPrefab;
+    
     [Header("Spawn Areas (Optional)")]
     [Tooltip("Area spawn untuk Human. Jika kosong, fallback ke posisi default.")]
     [SerializeField] private SpawnArea[] humanSpawnAreas;
@@ -70,11 +74,79 @@ public class GamePlayController : NetworkBehaviour
         }
     }
 
+    private IEnumerator InitializeGameplay()
+    {
+        // 1) Spawn GameStateManager FIRST
+        yield return StartCoroutine(SpawnGameStateManager());
+        
+        // 2) Verify GameStateManager is ready
+        float timeout = 5f;
+        float elapsed = 0f;
+        while (GameStateManager.Instance == null && elapsed < timeout)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        if (GameStateManager.Instance == null)
+        {
+            Debug.LogError("[GamePlayController] GameStateManager failed to spawn after timeout!");
+            yield break;
+        }
+        
+        Debug.Log("[GamePlayController] GameStateManager ready, starting spawn sequence...");
+        
+        // 3) Now spawn players
+        yield return StartCoroutine(SpawnSequence());
+    }
+
+    private IEnumerator SpawnGameStateManager()
+    {
+        if (!IsServer) yield break;
+
+        // Cek apakah GameStateManager sudah ada di scene
+        if (GameStateManager.Instance != null)
+        {
+            Debug.Log("[GamePlayController] GameStateManager already exists in scene.");
+            yield break;
+        }
+
+        // Spawn GameStateManager dari prefab jika disediakan
+        if (gameStateManagerPrefab != null)
+        {
+            GameObject gsmInstance = Instantiate(gameStateManagerPrefab);
+            if (gsmInstance.TryGetComponent<NetworkObject>(out var netObj))
+            {
+                netObj.Spawn(true); // Spawn as persistent (DontDestroyOnLoad)
+                Debug.Log("[GamePlayController] GameStateManager spawned from prefab.");
+            }
+            else
+            {
+                Debug.LogError("[GamePlayController] GameStateManager prefab tidak memiliki NetworkObject component!");
+                Destroy(gsmInstance);
+                yield break;
+            }
+        }
+        else
+        {
+            // Fallback: Buat GameStateManager baru di scene jika tidak ada prefab
+            Debug.LogWarning("[GamePlayController] GameStateManager prefab tidak di-assign. Membuat instance baru...");
+            GameObject gsmInstance = new GameObject("GameStateManager");
+            var netObj = gsmInstance.AddComponent<NetworkObject>();
+            gsmInstance.AddComponent<GameStateManager>();
+            netObj.Spawn(true);
+            Debug.Log("[GamePlayController] GameStateManager created and spawned.");
+        }
+        
+        // Wait beberapa frame untuk GameStateManager selesai OnNetworkSpawn
+        yield return new WaitForSeconds(0.2f);
+    }
+
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            StartCoroutine(SpawnSequence());
+            StartCoroutine(InitializeGameplay());
         }
         
         // Subscribe ke perubahan allPlayersSpawned untuk unlock movement
@@ -333,6 +405,17 @@ public class GamePlayController : NetworkBehaviour
             netObj.SpawnAsPlayerObject(clientId);
             spawnedPlayers[clientId] = playerInstance;
             
+            // Register player ke GameStateManager
+            if (GameStateManager.Instance != null)
+            {
+                GameStateManager.Instance.RegisterPlayer(clientId, isTiger);
+                Debug.Log($"[GamePlayController] Player {clientId} registered as {(isTiger ? "Tiger" : "Human")} to GameStateManager");
+            }
+            else
+            {
+                Debug.LogError("[GamePlayController] CRITICAL: GameStateManager tidak ditemukan saat spawn player!");
+            }
+            
             // Pastikan transform sudah di-set dengan benar setelah spawn
             playerInstance.transform.position = position;
             
@@ -373,6 +456,9 @@ public class GamePlayController : NetworkBehaviour
 
     private void SetPlayerMovementEnabled(GameObject player, bool enabled)
     {
+        string state = enabled ? "ENABLED" : "DISABLED";
+        Debug.Log($"[SetPlayerMovementEnabled] Setting movement {state} for {player.name}");
+        
         // Disable/Enable komponen movement
         if (player.TryGetComponent<Rigidbody>(out var rb))
         {
@@ -385,20 +471,26 @@ public class GamePlayController : NetworkBehaviour
                     rb.angularVelocity = Vector3.zero;
                 }
                 rb.isKinematic = true;
+                Debug.Log($"[SetPlayerMovementEnabled] Rigidbody set to kinematic");
             }
             else
             {
                 rb.isKinematic = false;
+                rb.linearVelocity = Vector3.zero; // Clear velocity on unlock
+                rb.angularVelocity = Vector3.zero;
+                Debug.Log($"[SetPlayerMovementEnabled] Rigidbody set to non-kinematic");
             }
         }
         
         if (player.TryGetComponent<CharacterController>(out var cc))
         {
             cc.enabled = enabled;
+            Debug.Log($"[SetPlayerMovementEnabled] CharacterController {state}");
         }
         
         // Disable movement scripts (cari berdasarkan nama umum)
         var monoBehaviours = player.GetComponents<MonoBehaviour>();
+        int scriptsModified = 0;
         foreach (var mb in monoBehaviours)
         {
             string typeName = mb.GetType().Name.ToLower();
@@ -409,8 +501,10 @@ public class GamePlayController : NetworkBehaviour
                 if (typeName.Contains("network")) continue;
                 
                 mb.enabled = enabled;
+                scriptsModified++;
             }
         }
+        Debug.Log($"[SetPlayerMovementEnabled] Modified {scriptsModified} movement scripts");
     }
 
     private void UnlockAllPlayersMovement()
@@ -505,21 +599,32 @@ public class GamePlayController : NetworkBehaviour
         {
             var playerObject = NetworkManager.Singleton.LocalClient.PlayerObject;
             
-            // Re-enable Rigidbody
+            Debug.Log($"[Client] UnlockMovementClientRpc called for local player");
+            
+            // Re-enable Rigidbody FIRST
             if (playerObject.TryGetComponent<Rigidbody>(out var rb))
             {
                 rb.isKinematic = false;
+                rb.linearVelocity = Vector3.zero; // Clear any residual velocity
+                rb.angularVelocity = Vector3.zero;
+                Debug.Log("[Client] Rigidbody re-enabled and velocities cleared");
             }
             
             // Re-enable CharacterController
             if (playerObject.TryGetComponent<CharacterController>(out var cc))
             {
                 cc.enabled = true;
+                Debug.Log("[Client] CharacterController re-enabled");
             }
             
+            // Re-enable movement scripts
             SetPlayerMovementEnabled(playerObject.gameObject, true);
             
-            Debug.Log("Movement unlocked for local player");
+            Debug.Log("Movement unlocked for local player - should be controllable now");
+        }
+        else
+        {
+            Debug.LogWarning("[Client] UnlockMovementClientRpc: PlayerObject is null!");
         }
     }
 
