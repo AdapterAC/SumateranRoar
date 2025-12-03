@@ -8,6 +8,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private Button hostButton;
     [SerializeField] private Button joinButton;
     [SerializeField] private TMP_InputField joinCodeInput;
+    [SerializeField] private Button backButton;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +25,9 @@ public class MainMenuController : MonoBehaviour
             bool success = await RelayManager.Instance.StartClientWithRelay(joinCode, "dtls");
             Debug.Log($"Join button clicked. Success: {success}");
             SceneManager.LoadScene("Lobby");
+        });
+        backButton.onClick.AddListener(() => {
+            SceneManager.LoadScene("StartMenu");
         });
     }
 
