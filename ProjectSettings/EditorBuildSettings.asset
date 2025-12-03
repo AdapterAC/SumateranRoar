@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Maps/Maps1.unity
     guid: 027cd53b76d9b4926917abb1734552e8
+  - enabled: 1
+    path: Assets/Scenes/Cutscene/HumanWin.unity
+    guid: 55d52ef649043664883104f905804878
+  - enabled: 1
+    path: Assets/Scenes/Cutscene/TigerWin.unity
+    guid: 655b04365a5cd094599b9fc7bcc6a78b
   - enabled: 0
     path: Assets/Scenes/GamePlay.unity
     guid: 9d99c4f2973eb4114bb39ea3862f8411

@@ -2326,6 +2326,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
       insertIndex: -1
       addedObject: {fileID: -1972641181831771179}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6661652420825990561}
   m_SourcePrefab: {fileID: 100100000, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
 --- !u!137 &35932911057038716 stripped
 SkinnedMeshRenderer:
@@ -3708,9 +3711,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StaminaController
   ShowTopMostFoldoutHeaderGroup: 1
-  maxStamina: 100
+  maxStamina: 500
   staminaConsumptionRate: 20
-  staminaRegenerationRate: 15
+  staminaRegenerationRate: 25
   staminaExhaustionThreshold: 50
 --- !u!114 &-1972641181831771179
 MonoBehaviour:
@@ -3732,6 +3735,22 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 8a08d522fb5d2374ca429ccb0b3d0819, type: 3}
     volume: 0.5
   masterVolume: 1
+--- !u!114 &6661652420825990561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6244139467226834372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88dac0c043f446e4b979842f4881b443, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HumanOutlineController
+  outlineRenderingLayer: 1
+  walkSpeedThreshold: 0.05
+  speedParam: Speed
+  crouchParam: IsCrouching
 --- !u!137 &6278553096427251546 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 956782736964190159, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}

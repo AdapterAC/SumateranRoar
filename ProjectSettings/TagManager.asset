@@ -10,6 +10,8 @@ TagManager:
   - Grass
   - Metal
   - Rock
+  - CinemachineTarget
+  - Objective
   layers:
   - Default
   - TransparentFX
