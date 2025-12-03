@@ -65,7 +65,10 @@ public class ExitGate : InteractableTemplate
                 }
                 else
                 {
-                    Debug.LogWarning($"[ExitGate] Player {clientId} tidak terdaftar di GameStateManager!");
+                    Debug.LogWarning($"[ExitGate] Player {clientId} tidak terdaftar di GameStateManager! Melakukan auto-register sebagai human.");
+                    GameStateManager.Instance.EnsurePlayerRegistered(clientId, false);
+                    // Setelah register paksa sebagai human, langsung catat exit agar state tidak tertahan
+                    GameStateManager.Instance.OnHumanExited(clientId);
                 }
             }
             

@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -117,6 +118,44 @@ public class GameStateManager : NetworkBehaviour
     public bool IsHuman(ulong clientId)
     {
         return playerRoles.TryGetValue(clientId, out bool isTiger) && !isTiger;
+    }
+
+    /// <summary>
+    /// ServerRpc untuk register player dari client jika belum terdaftar
+    /// </summary>
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestRegisterPlayerServerRpc(ulong clientId, bool isTiger)
+    {
+        if (!playerRoles.ContainsKey(clientId))
+        {
+            RegisterPlayer(clientId, isTiger);
+            Debug.Log($"[GameStateManager] RegisterPlayer via ServerRpc untuk client {clientId}");
+        }
+        else
+        {
+            Debug.Log($"[GameStateManager] Client {clientId} sudah terdaftar, skip register.");
+        }
+    }
+
+    /// <summary>
+    /// Pastikan player sudah terdaftar (dipanggil dari client ataupun server)
+    /// </summary>
+    public void EnsurePlayerRegistered(ulong clientId, bool isTigerGuess)
+    {
+        if (playerRoles.ContainsKey(clientId))
+        {
+            return;
+        }
+
+        if (IsServer)
+        {
+            RegisterPlayer(clientId, isTigerGuess);
+            Debug.Log($"[GameStateManager] Auto-register player {clientId} sebagai {(isTigerGuess ? "Tiger" : "Human")} (server)");
+        }
+        else
+        {
+            RequestRegisterPlayerServerRpc(clientId, isTigerGuess);
+        }
     }
 
     #endregion
@@ -250,17 +289,11 @@ public class GameStateManager : NetworkBehaviour
 
         gameEnded.Value = true;
 
-        Debug.Log($"[GameStateManager] Loading {humanWinSceneName} scene...");
+        Debug.Log($"[GameStateManager] Triggering Human Win - notifying all clients...");
 
-        // Load scene melalui NetworkManager untuk sinkronisasi semua client
-        if (NetworkManager.Singleton != null && NetworkManager.Singleton.SceneManager != null)
-        {
-            NetworkManager.Singleton.SceneManager.LoadScene(humanWinSceneName, LoadSceneMode.Single);
-        }
-        else
-        {
-            Debug.LogError("[GameStateManager] NetworkManager atau SceneManager tidak tersedia!");
-        }
+        // Kirim ke semua client untuk load cutscene secara lokal
+        LoadCutsceneClientRpc(humanWinSceneName);
+        ScheduleServerShutdown();
     }
 
     /// <summary>
@@ -273,16 +306,56 @@ public class GameStateManager : NetworkBehaviour
 
         gameEnded.Value = true;
 
-        Debug.Log($"[GameStateManager] Loading {tigerWinSceneName} scene...");
+        Debug.Log($"[GameStateManager] Triggering Tiger Win - notifying all clients...");
 
-        // Load scene melalui NetworkManager untuk sinkronisasi semua client
-        if (NetworkManager.Singleton != null && NetworkManager.Singleton.SceneManager != null)
+        // Kirim ke semua client untuk load cutscene secara lokal
+        LoadCutsceneClientRpc(tigerWinSceneName);
+        ScheduleServerShutdown();
+    }
+
+    /// <summary>
+    /// ClientRpc untuk load cutscene di semua client (termasuk host)
+    /// </summary>
+    [ClientRpc]
+    private void LoadCutsceneClientRpc(string sceneName)
+    {
+        Debug.Log($"[GameStateManager] Client received cutscene load request: {sceneName}");
+        StartCoroutine(LoadCutsceneRoutine(sceneName));
+    }
+
+    private IEnumerator LoadCutsceneRoutine(string sceneName)
+    {
+        // Tunggu satu frame untuk memastikan RPC selesai diproses
+        yield return null;
+
+        SceneManager.LoadScene(sceneName);
+
+        // Non-host clients bisa langsung shutdown setelah scene berpindah
+        yield return null;
+        if (!IsServer && NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene(tigerWinSceneName, LoadSceneMode.Single);
+            NetworkManager.Singleton.Shutdown();
         }
-        else
+    }
+
+    private void ScheduleServerShutdown()
+    {
+        if (!IsServer)
         {
-            Debug.LogError("[GameStateManager] NetworkManager atau SceneManager tidak tersedia!");
+            return;
+        }
+
+        StartCoroutine(ServerShutdownAfterDelay());
+    }
+
+    private IEnumerator ServerShutdownAfterDelay()
+    {
+        // Beri waktu agar RPC terkirim sebelum server mati
+        yield return new WaitForSeconds(0.5f);
+
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
+        {
+            NetworkManager.Singleton.Shutdown();
         }
     }
 
