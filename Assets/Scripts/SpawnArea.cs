@@ -18,8 +18,23 @@ public class SpawnArea : MonoBehaviour
     public LayerMask groundMask = ~0;
 
     [Tooltip("Offset Y setelah penempatan (opsional), misal 0.1 agar tidak clip.")]
-    public float yOffset = 0.0f;
+    public float yOffset = 1.0f;
+    
+    [Tooltip("Jangan destroy SpawnArea ini saat scene berubah")]
+    public bool persistAcrossScenes = false;
 
+    private void Awake()
+    {
+        // Pastikan SpawnArea tidak di-destroy jika diperlukan
+        if (persistAcrossScenes)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+
+    /// <summary>
+    /// Mendapatkan titik random dalam area spawn yang valid di atas ground/terrain.
+    /// </summary>
     public bool TryGetRandomPoint(out Vector3 point)
     {
         // Ambil titik acak dalam lingkaran (sumbu XZ)
@@ -62,6 +77,55 @@ public class SpawnArea : MonoBehaviour
         point = pos;
         return true;
     }
+    
+    /// <summary>
+    /// Mendapatkan titik random dengan validasi tambahan untuk memastikan posisi aman.
+    /// </summary>
+    public bool TryGetValidatedRandomPoint(out Vector3 point, int maxAttempts = 10)
+    {
+        for (int i = 0; i < maxAttempts; i++)
+        {
+            if (TryGetRandomPoint(out Vector3 candidatePoint))
+            {
+                // Validasi: pastikan ada ground di bawah
+                if (IsPositionValid(candidatePoint))
+                {
+                    point = candidatePoint;
+                    return true;
+                }
+            }
+        }
+        
+        // Fallback ke center
+        point = transform.position + Vector3.up * yOffset;
+        return true;
+    }
+    
+    /// <summary>
+    /// Cek apakah posisi valid (ada ground di bawah, tidak di void)
+    /// </summary>
+    private bool IsPositionValid(Vector3 position)
+    {
+        // Cek dengan raycast ke bawah
+        Vector3 rayOrigin = position + Vector3.up * 10f;
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 50f, groundMask, QueryTriggerInteraction.Ignore))
+        {
+            // Posisi valid jika hit point tidak terlalu jauh dari posisi yang diminta
+            float heightDiff = Mathf.Abs(hit.point.y - (position.y - yOffset));
+            return heightDiff < 20f; // Toleransi 20 meter
+        }
+        
+        // Cek dengan Terrain
+        Terrain terrain = Terrain.activeTerrain;
+        if (terrain != null)
+        {
+            float terrainHeight = terrain.SampleHeight(position) + terrain.transform.position.y;
+            // Pastikan posisi berada di atas terrain
+            return position.y >= terrainHeight - 1f;
+        }
+        
+        return false;
+    }
 
     private void OnDrawGizmosSelected()
     {
@@ -69,6 +133,10 @@ public class SpawnArea : MonoBehaviour
     #if UNITY_EDITOR
         Handles.color = new Color(0f, 1f, 1f, 0.9f);
         Handles.DrawWireDisc(transform.position, Vector3.up, radius);
+        
+        // Tampilkan area dengan warna berbeda
+        Handles.color = new Color(0f, 1f, 0f, 0.2f);
+        Handles.DrawSolidDisc(transform.position, Vector3.up, radius);
     #else
         // Fallback saat bukan di Editor (jarang diperlukan untuk gizmo)
         Gizmos.color = new Color(0f, 1f, 1f, 0.35f);

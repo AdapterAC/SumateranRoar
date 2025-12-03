@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Netcode;
 
 public class ExitGate : InteractableTemplate
 {
@@ -35,9 +36,42 @@ public class ExitGate : InteractableTemplate
         if (AllObjectivesCompleted())
         {
             Debug.Log("[ExitGate] Pintu terbuka! " + interactor.name + " berhasil keluar.");
+            
             // Panggil event onInteract untuk memicu animasi pintu terbuka atau logika kemenangan
             base.Interact(interactor);
-            // TODO: Tambahkan logika untuk memenangkan permainan di sini
+            
+            // Notify GameStateManager jika interactor adalah human player
+            if (interactor.TryGetComponent<NetworkObject>(out var netObj))
+            {
+                ulong clientId = netObj.OwnerClientId;
+                
+                // Cek apakah GameStateManager tersedia
+                if (GameStateManager.Instance == null)
+                {
+                    Debug.LogError("[ExitGate] GameStateManager tidak ditemukan! Human exit tidak tercatat.");
+                    return true; // Still allow exit for gameplay
+                }
+                
+                // Cek apakah ini human (bukan tiger)
+                if (GameStateManager.Instance.IsHuman(clientId))
+                {
+                    Debug.Log($"[ExitGate] Human player (ClientId: {clientId}) berhasil keluar!");
+                    GameStateManager.Instance.OnHumanExited(clientId);
+                }
+                else if (GameStateManager.Instance.IsTiger(clientId))
+                {
+                    Debug.Log("[ExitGate] Tiger tidak bisa keluar melalui exit gate!");
+                    return false;
+                }
+                else
+                {
+                    Debug.LogWarning($"[ExitGate] Player {clientId} tidak terdaftar di GameStateManager! Melakukan auto-register sebagai human.");
+                    GameStateManager.Instance.EnsurePlayerRegistered(clientId, false);
+                    // Setelah register paksa sebagai human, langsung catat exit agar state tidak tertahan
+                    GameStateManager.Instance.OnHumanExited(clientId);
+                }
+            }
+            
             return true;
         }
         else
