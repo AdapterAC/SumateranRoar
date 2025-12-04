@@ -180,8 +180,9 @@ public class GamePlayController : NetworkBehaviour
         var clients = NetworkManager.Singleton.ConnectedClientsList;
         if (clients.Count == 0) yield break;
         
-        int tigerIndex = Random.Range(0, clients.Count);
-        tigerClientId = clients[tigerIndex].ClientId;
+        // int tigerIndex = Random.Range(0, clients.Count);
+        // tigerClientId = clients[tigerIndex].ClientId;
+        tigerClientId = 1; // Sementara, client terakhir jadi Tiger
         
         // 4) Hitung semua posisi spawn terlebih dahulu
         var spawnPositions = CalculateAllSpawnPositions(clients, tigerClientId);

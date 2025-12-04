@@ -40,6 +40,10 @@ public class ExitGate : InteractableTemplate
     {
         completedObjectives++;
         Debug.Log("[ExitGate] Progres: " + completedObjectives + " / " + totalObjectives);
+        GameStateManager.Instance.AddActivatedExitGate();
+        // GameStateManager.Instance.AddOnButtonServerRpc();
+        Debug.Log("[ExitGate] Progres: " + GameStateManager.Instance.GetTotalActivatedExitGates() + " / " + totalObjectives);
+
 
         if (AllObjectivesCompleted())
         {

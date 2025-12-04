@@ -52,7 +52,7 @@ public class PlayerHealth : NetworkBehaviour
     private Vector3 attackerPosition;
     
     // Property untuk akses public
-    public int CurrentHealth => currentHealth.Value;
+    public int CurrentHealth => currentHealth.Value; 
     public int MaxHealth => maxHealth;
     public float CurrentSpeedMultiplier { get; private set; } = 1f;
 
@@ -548,4 +548,6 @@ public class PlayerHealth : NetworkBehaviour
     {
         return isAutoRunning;
     }
+
+
 }

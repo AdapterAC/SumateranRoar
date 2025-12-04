@@ -22,6 +22,9 @@ public class GameStateManager : NetworkBehaviour
     private NetworkVariable<int> humansExited = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<int> humansDead = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<bool> gameEnded = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    private NetworkVariable<int> totalActivatedExitGates = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    private NetworkVariable<int> timerCountDown = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    // private int totalOnButton = 0;
 
     // Track player roles (clientId -> isTiger)
     private Dictionary<ulong, bool> playerRoles = new Dictionary<ulong, bool>();
@@ -47,12 +50,25 @@ public class GameStateManager : NetworkBehaviour
         }
     }
 
+    private void Update()
+    {
+        UpdateTimer();
+    }
+
+    private void UpdateTimer()
+    {
+        float time = Mathf.Max(0, 300 - Time.timeSinceLevelLoad);
+        timerCountDown.Value = Mathf.FloorToInt(time);
+    }
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
 
         if (IsServer)
         {
+            // totalActivatedExitGates.Value = 0;
+            ScreenLogger.Log($"[GameStateManager] Total Acttivated value {totalActivatedExitGates.Value}");
             Debug.Log("[GameStateManager] Spawned on Server - Ready to track game state");
         }
         else
@@ -386,6 +402,13 @@ public class GameStateManager : NetworkBehaviour
         }
     }
 
+    public void AddActivatedExitGate()
+    {
+        if (!IsServer) return;
+        totalActivatedExitGates.Value++;
+        Debug.Log($"[GameStateManager] Activated Exit Gates: {totalActivatedExitGates.Value}");
+    }
+
     #endregion
 
     #region Public Getters (for UI)
@@ -395,6 +418,9 @@ public class GameStateManager : NetworkBehaviour
     public int GetHumansDead() => humansDead.Value;
     public int GetLivingHumans() => totalHumans.Value - humansExited.Value - humansDead.Value;
     public bool IsGameEnded() => gameEnded.Value;
+    public int GetTotalActivatedExitGates() => totalActivatedExitGates.Value;
+    public int GetTimerCountDown() => timerCountDown.Value;
+    // public int GetTotalOnButton() => totalOnButton;
 
     #endregion
 
@@ -405,4 +431,23 @@ public class GameStateManager : NetworkBehaviour
             Instance = null;
         }
     }
+
+    // ========================== SERVER RPC ==========================
+    // [ServerRpc(RequireOwnership = false)]
+    // public void AddOnButtonServerRpc()
+    // {
+    //     totalOnButton++;
+    //     AddOnButtonClientRpc();
+    // }
+
+    // ========================== CLIENT RPC ==========================
+    // [ClientRpc]
+    // public void AddOnButtonClientRpc()
+    // {
+    //     if (!IsServer)
+    //     {
+    //         totalOnButton++;
+    //         Debug.Log($"[GameStateManager] Total On Button: {totalOnButton}");
+    //     }
+    // }
 }
