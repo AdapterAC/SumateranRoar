@@ -57,6 +57,7 @@ public class GameStateManager : NetworkBehaviour
 
     private void UpdateTimer()
     {
+        if (!IsServer) return;
         float time = Mathf.Max(0, 350 - Time.timeSinceLevelLoad);
         timerCountDown.Value = Mathf.FloorToInt(time);
         if (time <= 0 && !gameEnded.Value)
