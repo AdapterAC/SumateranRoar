@@ -57,8 +57,13 @@ public class GameStateManager : NetworkBehaviour
 
     private void UpdateTimer()
     {
-        float time = Mathf.Max(0, 300 - Time.timeSinceLevelLoad);
+        float time = Mathf.Max(0, 350 - Time.timeSinceLevelLoad);
         timerCountDown.Value = Mathf.FloorToInt(time);
+        if (time <= 0 && !gameEnded.Value)
+        {
+            Debug.Log("[GameStateManager] Waktu habis! Tiger menang.");
+            TriggerTigerWin();
+        }
     }
 
     public override void OnNetworkSpawn()
