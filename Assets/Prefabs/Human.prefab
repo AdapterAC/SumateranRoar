@@ -4006,7 +4006,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1333635531
+  GlobalObjectIdHash: 2269254014
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -4294,8 +4294,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 3
-  twoHealthSpeedMultiplier: 0.75
-  oneHealthSpeedMultiplier: 0.5
+  twoHealthSpeedMultiplier: 0.9
+  oneHealthSpeedMultiplier: 0.85
   injuredLayerTransitionDuration: 0.5
   autoRunDuration: 4
   autoRunSpeedMultiplier: 3
@@ -4771,7 +4771,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StaminaController
   ShowTopMostFoldoutHeaderGroup: 1
   maxStamina: 500
-  staminaConsumptionRate: 20
+  staminaConsumptionRate: 15
   staminaRegenerationRate: 25
   staminaExhaustionThreshold: 50
 --- !u!114 &-1972641181831771179
