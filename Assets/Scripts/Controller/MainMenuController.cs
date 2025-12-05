@@ -9,6 +9,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private Button joinButton;
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private Button backButton;
+    [SerializeField] private GameObject loadingScreen;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +35,10 @@ public class MainMenuController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (RelayManager.Instance != null && RelayManager.Instance.isLoading) {
+            loadingScreen.SetActive(true);
+        } else {
+            loadingScreen.SetActive(false);
+        }
     }
 }

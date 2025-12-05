@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 public class RelayManager : MonoBehaviour
 {
     public static RelayManager Instance;
+    public bool isLoading = false;
     private void Awake()
     {
         Instance = this;
@@ -48,6 +49,7 @@ public class RelayManager : MonoBehaviour
 
     public async Task<string> StartHostWithRelay(int maxConnections, string connectionType)
     {
+        isLoading = true;
         await UnityServices.InitializeAsync();
         if (!AuthenticationService.Instance.IsSignedIn)
         {
@@ -58,11 +60,13 @@ public class RelayManager : MonoBehaviour
         var joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
         roomCode = joinCode;
         Debug.Log($"StartHostWithRelay - Join code: {joinCode}");
+        isLoading = false;
         return NetworkManager.Singleton.StartHost() ? joinCode : null;
     }
 
     public async Task<bool> StartClientWithRelay(string joinCode, string connectionType)
     {
+        isLoading = true;
         await UnityServices.InitializeAsync();
         if (!AuthenticationService.Instance.IsSignedIn)
         {
@@ -72,6 +76,7 @@ public class RelayManager : MonoBehaviour
         var allocation = await RelayService.Instance.JoinAllocationAsync(joinCode: joinCode);
         NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, connectionType));
         roomCode = joinCode;
+        isLoading = false;
         return !string.IsNullOrEmpty(joinCode) && NetworkManager.Singleton.StartClient();
     }
 
