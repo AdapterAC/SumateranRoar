@@ -108,7 +108,28 @@ public class IndicatorBar : NetworkBehaviour
         Debug.Log($"[IndicatorBar] Total Activated Exit Gates: {activated}");
 
         // Jika jumlah gate berbeda, ganti 4 dengan jumlah aktual
-        textActivated.text = $"{activated}/4";
+        if (gsm.GetTotalHumans() == 1)
+        {
+            textActivated.text = $"{activated}/2";
+            return;
+        } else if (gsm.GetTotalHumans() == 2)
+        {
+            textActivated.text = $"{activated}/4";
+            return;
+        } else if (gsm.GetTotalHumans() == 3)
+        {
+            textActivated.text = $"{activated}/6";
+            return;
+        } else if (gsm.GetTotalHumans() == 4)
+        {
+            textActivated.text = $"{activated}/8";
+            return;
+        } else
+        {
+            textActivated.text = $"{activated}/4";
+            return;
+        }
+        // textActivated.text = $"{activated}/4";
     }
 
     private void UpdateHumanLiveText()
