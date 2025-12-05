@@ -181,7 +181,7 @@ public class GamePlayController : NetworkBehaviour
         
         int tigerIndex = Random.Range(0, clients.Count);
         tigerClientId = clients[tigerIndex].ClientId;
-        tigerClientId = 1; // Sementara, client terakhir jadi Tiger
+        // tigerClientId = 1; // Sementara, client terakhir jadi Tiger
         // tigerClientId = 0; // Sementara, client terakhir jadi Tiger
         
         // 4) Hitung semua posisi spawn terlebih dahulu

@@ -3563,6 +3563,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6661652420825990561}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2886828284839240374}
   m_SourcePrefab: {fileID: 100100000, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
 --- !u!137 &35932911057038716 stripped
 SkinnedMeshRenderer:
@@ -4985,6 +4988,20 @@ MonoBehaviour:
   walkSpeedThreshold: 0.05
   speedParam: Speed
   crouchParam: IsCrouching
+--- !u!114 &2886828284839240374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6244139467226834372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9e58dfcee91c499888f47071930c4e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IndicatorBarController
+  ShowTopMostFoldoutHeaderGroup: 1
+  indicatorBar: {fileID: 8026000356045667446}
 --- !u!137 &6278553096427251546 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 956782736964190159, guid: 831f7229e82863e4d80ada075e09eba6, type: 3}
