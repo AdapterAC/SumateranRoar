@@ -3,14 +3,17 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
+using UnityEngine.Rendering.Universal;
 
-public class IndicatorBar : MonoBehaviour
+public class IndicatorBar : NetworkBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Image[] lifeBarImages;             
     [SerializeField] private TextMeshProUGUI textActivated;   
     [SerializeField] private TextMeshProUGUI textTimer;
     [SerializeField] private TextMeshProUGUI textHumanLive;
+    [SerializeField] private TextMeshProUGUI playerName;
+    private int playerId;
 
     private GameStateManager gsm;
 
@@ -19,6 +22,9 @@ public class IndicatorBar : MonoBehaviour
 
     private void Start()
     {
+        if (!IsOwner) return;
+        playerId = GetComponentInParent<NetworkObject>().OwnerClientId.GetHashCode();
+        playerName.text = $"Name: Player {playerId}";
         gsm = GameStateManager.Instance;
 
         if (gsm == null)
@@ -32,6 +38,7 @@ public class IndicatorBar : MonoBehaviour
 
     private void Update()
     {
+        if (!IsOwner) return;
         // Jika belum ketemu saat Start, coba lagi (misalnya player spawn belakangan)
         if (localPlayerHealth == null)
         {
