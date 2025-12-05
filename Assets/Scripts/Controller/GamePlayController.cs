@@ -162,8 +162,7 @@ public class GamePlayController : NetworkBehaviour
     {
         if (newValue)
         {
-            // Semua player sudah spawn, unlock movement untuk semua
-            UnlockAllPlayersMovement();
+            Debug.Log("All players spawned and ready!");
         }
     }
 
@@ -206,10 +205,7 @@ public class GamePlayController : NetworkBehaviour
             }
         }
         
-        // 7) Tunggu semua client konfirmasi ready
-        yield return StartCoroutine(WaitForAllClientsReady());
-        
-        // 8) Set flag bahwa semua player sudah spawn
+        // 7) Set flag bahwa semua player sudah spawn
         allPlayersSpawned.Value = true;
         
         Debug.Log("All players spawned and ready!");
@@ -400,9 +396,6 @@ public class GamePlayController : NetworkBehaviour
         
         if (playerInstance.TryGetComponent<NetworkObject>(out var netObj))
         {
-            // Freeze movement sementara di server SEBELUM spawn
-            SetPlayerMovementEnabled(playerInstance, false);
-            
             // Spawn sebagai player object
             netObj.SpawnAsPlayerObject(clientId);
             spawnedPlayers[clientId] = playerInstance;
@@ -421,9 +414,8 @@ public class GamePlayController : NetworkBehaviour
             // Pastikan transform sudah di-set dengan benar setelah spawn
             playerInstance.transform.position = position;
             
-            // Kirim RPC ke client untuk teleport dan freeze
-            // Client yang punya authority akan melakukan teleport
-            TeleportAndFreezeClientRpc(position, clientId);
+            // Kirim RPC ke client untuk teleport
+            TeleportClientRpc(position, clientId);
             
             // Tunggu beberapa frame untuk sinkronisasi
             yield return new WaitForSeconds(0.1f);
@@ -509,30 +501,30 @@ public class GamePlayController : NetworkBehaviour
         Debug.Log($"[SetPlayerMovementEnabled] Modified {scriptsModified} movement scripts");
     }
 
-    private void UnlockAllPlayersMovement()
-    {
-        // Unlock di server
-        foreach (var kvp in spawnedPlayers)
-        {
-            if (kvp.Value != null)
-            {
-                SetPlayerMovementEnabled(kvp.Value, true);
-            }
-        }
+    // private void UnlockAllPlayersMovement()
+    // {
+    //     // Unlock di server
+    //     foreach (var kvp in spawnedPlayers)
+    //     {
+    //         if (kvp.Value != null)
+    //         {
+    //             SetPlayerMovementEnabled(kvp.Value, true);
+    //         }
+    //     }
         
-        // Kirim RPC ke semua client untuk unlock
-        UnlockMovementClientRpc();
-    }
+    //     // Kirim RPC ke semua client untuk unlock
+    //     // UnlockMovementClientRpc();
+    // }
 
     [ClientRpc]
-    private void TeleportAndFreezeClientRpc(Vector3 position, ulong targetClientId)
+    private void TeleportClientRpc(Vector3 position, ulong targetClientId)
     {
         if (NetworkManager.Singleton.LocalClientId != targetClientId) return;
         
-        StartCoroutine(TeleportAndFreezeCoroutine(position));
+        StartCoroutine(TeleportCoroutine(position));
     }
 
-    private IEnumerator TeleportAndFreezeCoroutine(Vector3 position)
+    private IEnumerator TeleportCoroutine(Vector3 position)
     {
         float timeout = 5f;
         float elapsed = 0f;
@@ -546,93 +538,45 @@ public class GamePlayController : NetworkBehaviour
         {
             var playerObject = NetworkManager.Singleton.LocalClient.PlayerObject;
             
-            // Disable CharacterController dulu untuk teleport
+            // Disable CharacterController sementara untuk teleport
             CharacterController cc = null;
             if (playerObject.TryGetComponent<CharacterController>(out cc))
             {
                 cc.enabled = false;
             }
             
-            // Freeze Rigidbody
-            if (playerObject.TryGetComponent<Rigidbody>(out var rb))
-            {
-                rb.linearVelocity = Vector3.zero;
-                if (!rb.isKinematic)
-                {
-                    rb.angularVelocity = Vector3.zero;
-                }
-                rb.isKinematic = true;
-            }
-            
             // Set posisi langsung
             playerObject.transform.position = position;
             
             // Tunggu beberapa frame
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.1f);
             
             // Set posisi lagi untuk memastikan
             playerObject.transform.position = position;
             
-            // Jika menggunakan ClientNetworkTransform, panggil Teleport dari client (pemilik authority)
+            // Enable CharacterController kembali
+            if (cc != null)
+            {
+                cc.enabled = true;
+            }
+            
+            // Jika menggunakan NetworkTransform, sync posisi
             if (playerObject.TryGetComponent<NetworkTransform>(out var networkTransform))
             {
-                // Client adalah owner dan punya authority, jadi bisa teleport
                 if (networkTransform.IsOwner)
                 {
-                    networkTransform.Teleport(position, Quaternion.identity, playerObject.transform.localScale);
+                    networkTransform.Teleport(position, playerObject.transform.rotation, playerObject.transform.localScale);
                 }
             }
             
-            // Freeze movement
-            SetPlayerMovementEnabled(playerObject.gameObject, false);
-            
-            Debug.Log($"Client teleported and frozen at: {position}");
+            Debug.Log($"Client teleported to: {position}");
         }
         else
         {
-            Debug.LogError("TeleportAndFreezeCoroutine: PlayerObject not found after timeout!");
-        }
-    }
-
-    [ClientRpc]
-    private void UnlockMovementClientRpc()
-    {
-        if (NetworkManager.Singleton.LocalClient?.PlayerObject != null)
-        {
-            var playerObject = NetworkManager.Singleton.LocalClient.PlayerObject;
-            
-            Debug.Log($"[Client] UnlockMovementClientRpc called for local player");
-            
-            // Re-enable Rigidbody FIRST
-            if (playerObject.TryGetComponent<Rigidbody>(out var rb))
-            {
-                rb.isKinematic = false;
-                rb.linearVelocity = Vector3.zero; // Clear any residual velocity
-                rb.angularVelocity = Vector3.zero;
-                Debug.Log("[Client] Rigidbody re-enabled and velocities cleared");
-            }
-            
-            // Re-enable CharacterController
-            if (playerObject.TryGetComponent<CharacterController>(out var cc))
-            {
-                cc.enabled = true;
-                Debug.Log("[Client] CharacterController re-enabled");
-            }
-            
-            // Re-enable movement scripts
-            SetPlayerMovementEnabled(playerObject.gameObject, true);
-            
-            Debug.Log("Movement unlocked for local player - should be controllable now");
-        }
-        else
-        {
-            Debug.LogWarning("[Client] UnlockMovementClientRpc: PlayerObject is null!");
+            Debug.LogError("TeleportCoroutine: PlayerObject not found after timeout!");
         }
     }
 
     // Legacy methods untuk kompatibilitas (tidak dipakai lagi)
     private void SpawnPlayers() { }
-    
-    [ClientRpc]
-    private void TeleportClientRpc(Vector3 position, ulong targetClientId) { }
 }
