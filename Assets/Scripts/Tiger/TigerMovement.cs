@@ -250,7 +250,7 @@ public class TigerMovement : NetworkBehaviour
         moveDirection.y = verticalSpeed;
 
         // Menggerakkan CharacterController
-        controller.Move(moveDirection * Time.deltaTime);
+        // controller.Move(moveDirection * Time.deltaTime);
     }
 
     void HandleAnimation()

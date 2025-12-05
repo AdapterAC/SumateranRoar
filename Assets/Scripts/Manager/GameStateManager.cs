@@ -415,6 +415,12 @@ public class GameStateManager : NetworkBehaviour
         Debug.Log($"[GameStateManager] Activated Exit Gates: {totalActivatedExitGates.Value}");
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void AddActivatedExitGateServerRpc()
+    {
+        AddActivatedExitGate();
+    }
+
     #endregion
 
     #region Public Getters (for UI)
